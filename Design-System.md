@@ -57,7 +57,7 @@ lo mismo con colores fijos. **No** se usa el logo de HP.
 | `.imprimir-grid`, `.opciones-card` | Portal | Dos columnas (documento y opciones fijas al hacer scroll); una sola bajo 960 px |
 | `.seg-full`, `.field-hint` | Portal | Segmentado a todo el ancho; ayuda o error bajo un campo |
 | `.stepper`, `.check` | Portal | Copias con botones menos/más; casilla Intercalar |
-| `.pag-grid`, `.pag-mini`, `.pag-lienzo`, `.pag-marca`, `.pag-num` | Portal | Miniaturas; `aria-pressed="true"` = página elegida (fondo `--primary-soft`) |
+| `.pag-grid`, `.pag-mini`, `.pag-lienzo`, `.pag-marca`, `.pag-num` | Portal | Miniaturas; `.pag-lienzo` es la hoja de papel (proporción del papel y orientación elegidos) con la página encajada; `aria-pressed="true"` = página elegida (fondo `--primary-soft`) |
 | `.resumen-imp` | Portal | Resumen: páginas, copias y hojas |
 | `.progreso`, `.progreso-barra` | Portal | Progreso de subida (`.indeterminado` mientras imprime) |
 | `.recientes`, `.reciente`, `.reciente-ico`, `.reciente-nombre`, `.form-reimprimir` | Portal | Lista «Recientes»; filas separadas por `--outline` como las filas de tabla del Dashboard |

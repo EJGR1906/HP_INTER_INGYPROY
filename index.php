@@ -221,7 +221,7 @@ $config = [
 
             <div class="vista" id="vista" hidden>
                 <div class="vista-head">
-                    <p class="muted" id="vistaAyuda">Pulsa una página para quitarla o agregarla a la impresión.</p>
+                    <p class="muted" id="vistaAyuda">Así saldrá cada hoja. Pulsa una para quitarla o agregarla.</p>
                     <div class="vista-acciones">
                         <button type="button" class="btn btn-ghost btn-sm" id="selTodas">Todas</button>
                         <button type="button" class="btn btn-ghost btn-sm" id="selNinguna">Ninguna</button>
@@ -302,6 +302,7 @@ $config = [
                     <button type="button" class="seg-btn" data-duplex="largo" role="radio" aria-checked="false">Borde largo</button>
                     <button type="button" class="seg-btn" data-duplex="corto" role="radio" aria-checked="false">Borde corto</button>
                 </div>
+                <span class="field-hint" id="duplexAyuda" aria-live="polite">Imprime solo por un lado de la hoja.</span>
             </fieldset>
             <?php endif; ?>
 

@@ -438,10 +438,11 @@ a.sub-title:hover { color: var(--on-surface); text-decoration: none; }
 .pag-mini[aria-pressed="true"] .pag-num { color: var(--on-primary-soft); font-weight: 600; }
 .pag-mini[aria-pressed="false"] .pag-lienzo { opacity: .35; }
 .pag-lienzo {
-    width: 100%; aspect-ratio: 8.5 / 11; display: grid; place-items: center;
+    width: 100%; aspect-ratio: 8.5 / 11; display: flex; align-items: center; justify-content: center;
+    transition: aspect-ratio .2s;
     background: #ffffff; border-radius: 4px; outline: 1px solid var(--outline); overflow: hidden;
 }
-.pag-lienzo canvas { max-width: 100%; max-height: 100%; display: block; }
+.pag-lienzo canvas { display: block; width: 100%; height: auto; flex: none; }
 .pag-marca {
     position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; border-radius: 50%;
     display: grid; place-items: center; background: var(--btn); color: #ffffff;

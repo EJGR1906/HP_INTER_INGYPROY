@@ -61,10 +61,11 @@ ESC%-12345X
 ```
 
 ## Orientación y escala (pdf-lib)
+La cuenta vive en `hojaPara()` de `assets/js/imprimir.js` y la usan tanto la vista previa
+(cada miniatura es la hoja que saldrá) como `construirPdf()`, así lo que se ve es lo que se imprime.
 Cada página elegida se incrusta (`embedPages`) y se dibuja centrada en una hoja del
 papel elegido. *Automática* pone la hoja horizontal si la página se ve más ancha
-que alta. Se respeta el giro `/Rotate` de la página original. Con *Tamaño real* y
-orientación automática solo se copian las páginas, sin transformar.
+que alta. Se respeta el giro `/Rotate` de la página original.
 
 ## Seguridad
 - CSRF en todo POST (`csrf_token`, `csrf_ok`).
