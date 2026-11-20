@@ -1,14 +1,19 @@
 # .htaccess — Portal de impresión
+# - index.php es la página de entrada (si falta, Apache da 403 con -Indexes).
+# - ExecCGI: con mod_fcgid, PHP se ejecuta como script FastCGI y Apache
+#   exige ExecCGI en la carpeta; sin él responde 403 Forbidden.
 # - Sin listado de carpetas.
 # - Sin servir por HTTP el config, las librerías ni el registro.
-Options -Indexes
+# Requiere en httpd.conf: AllowOverride All (o al menos Options Indexes FileInfo AuthConfig).
+DirectoryIndex index.php
+Options -Indexes +ExecCGI
 
-# No exponer código ni registros como texto plano.
-<FilesMatch "\.(jsonl|md)$">
+# No exponer documentación ni registros como texto plano.
+<FilesMatch "\.(jsonl|md|ini|log)$">
     Require all denied
 </FilesMatch>
 
-# Bloquear archivos ocultos (.htaccess, etc.).
+# Bloquear archivos ocultos (.htaccess, .user.ini, .gitignore...).
 <FilesMatch "^\.">
     Require all denied
 </FilesMatch>

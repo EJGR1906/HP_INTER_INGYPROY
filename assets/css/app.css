@@ -1,0 +1,467 @@
+/* =====================================================================
+   app.css — Sistema de diseño del Portal de impresión. Es el MISMO sistema
+   del Dashboard FTTM (EJGR1906/Dashboard-FTTM, assets/css/app.css), según
+   el design.md de apple.com y las Human Interface Guidelines de Apple:
+   superficies planas sin bordes (la separación la da el fondo: tarjetas
+   blancas sobre gris claro), esquinas amplias, botones en píldora, campos
+   rellenos, mucho aire y tipografía del sistema. Sin sombras, brillos ni
+   bordes de color.
+   Contraste AA: texto >= 4.5:1. Tema claro/oscuro: sigue al sistema y se
+   puede forzar con <html data-theme="light|dark"> (assets/js/comun.js).
+   Detalle de tokens y componentes en Design-System.md.
+   Se copian solo las piezas que usa el portal; las propias van al final
+   ("Portal de impresión").
+   ===================================================================== */
+
+:root {
+    color-scheme: light;
+    /* Acento */
+    --primary: #0066cc;            /* Action Blue: enlaces, CTA y todo lo interactivo */
+    --primary-hover: #0058b0;
+    --focus: #0071e3;              /* Focus Blue: anillo de foco del teclado */
+    --btn: #0066cc;                /* relleno del botón principal (= Action Blue) */
+    --btn-hover: #0058b0;
+    --on-primary: #ffffff;
+    --primary-soft: #e8f1fc;       /* selección, fondos activos */
+    --on-primary-soft: #0058b0;
+
+    /* Superficies y texto */
+    --bg: #f5f5f7;
+    --surface: #ffffff;
+    --surface-2: #f5f5f7;          /* campos y rellenos dentro de tarjetas */
+    --surface-3: #e8e8ed;          /* hover, controles secundarios */
+    --on-surface: #1d1d1f;
+    --on-surface-variant: #6e6e73;
+    --outline: #e5e5ea;            /* filetes neutros (filas, rejilla de gráficas) */
+    --outline-strong: #d2d2d7;
+    --nav-bg: rgba(245, 245, 247, .8);   /* sub-nav esmerilada (Parchment 80 %) */
+    --global-nav: #000000;               /* global nav: negro puro en ambos temas */
+    --on-global-nav: #ffffff;
+    --on-global-nav-muted: #d2d2d7;
+
+    /* Estados */
+    --ok: #34c759;
+    --ok-text: #1d7a35;
+    --ok-bg: #e9f8ee;
+    --error: #ff3b30;
+    --error-text: #c4170c;
+    --error-bg: #fdeceb;
+    --warn: #ff9500;
+    --warn-text: #9c4f00;
+    --warn-bg: #fff3e0;
+
+    /* Radios de Apple: sm utilitario, md cápsula, lg tarjetas, pill acciones */
+    --radius-sm: 8px;
+    --radius: 11px;
+    --radius-lg: 18px;
+    --pill: 9999px;
+    --font: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-display: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --global-h: 44px;
+    --subnav-h: 52px;
+}
+
+/* Tokens del tema oscuro (se repiten: por preferencia del sistema y forzado). */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --primary: #2997ff; --primary-hover: #52abff; --focus: #2997ff; --btn: #0066cc; --btn-hover: #0071e3; --on-primary: #ffffff;
+        --primary-soft: #0f2a47; --on-primary-soft: #8ec8ff;
+        --bg: #000000; --surface: #272729; --surface-2: #333336; --surface-3: #424245;
+        --on-surface: #f5f5f7; --on-surface-variant: #a1a1a6; --outline: #38383a; --outline-strong: #48484a;
+        --nav-bg: rgba(29, 29, 31, .8);
+        --ok: #30d158; --ok-text: #4fdc75; --ok-bg: #12291a;
+        --error: #ff453a; --error-text: #ff6961; --error-bg: #3a1513;
+        --warn: #ff9f0a; --warn-text: #ffb340; --warn-bg: #33240a;
+    }
+}
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --primary: #2997ff; --primary-hover: #52abff; --focus: #2997ff; --btn: #0066cc; --btn-hover: #0071e3; --on-primary: #ffffff;
+    --primary-soft: #0f2a47; --on-primary-soft: #8ec8ff;
+    --bg: #000000; --surface: #272729; --surface-2: #333336; --surface-3: #424245;
+    --on-surface: #f5f5f7; --on-surface-variant: #a1a1a6; --outline: #38383a; --outline-strong: #48484a;
+    --nav-bg: rgba(29, 29, 31, .8);
+    --ok: #30d158; --ok-text: #4fdc75; --ok-bg: #12291a;
+    --error: #ff453a; --error-text: #ff6961; --error-bg: #3a1513;
+    --warn: #ff9f0a; --warn-text: #ffb340; --warn-bg: #33240a;
+}
+
+/* ------------------------------ Base ------------------------------- */
+* { box-sizing: border-box; }
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font);
+    font-size: 17px;
+    line-height: 1.47;
+    letter-spacing: -.022em;
+    color: var(--on-surface);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { margin: 0; font-family: var(--font-display); font-weight: 600; letter-spacing: -.015em; }
+h3 { font-size: 19px; line-height: 1.21; }
+p { margin: 0; }
+a { color: var(--primary); text-decoration: none; }
+a:hover { color: var(--primary-hover); text-decoration: underline; text-underline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+[hidden] { display: none !important; }
+.muted { color: var(--on-surface-variant); font-size: 14px; }
+.grow { flex: 1; }
+.nowrap { white-space: nowrap; }
+.sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+.icon { width: 18px; height: 18px; flex: none; display: inline-block; vertical-align: middle; }
+.icon-sm { width: 16px; height: 16px; flex: none; display: inline-block; vertical-align: middle; }
+.icon-lg { width: 28px; height: 28px; flex: none; }
+code { background: var(--surface-2); padding: 2px 7px; border-radius: 6px; font-size: 13px; }
+code.ruta { word-break: break-all; }
+.mt-0 { margin-top: 0; }
+.mt-12 { margin-top: 12px; }
+.stack { display: grid; gap: 14px; }
+.text-ok { color: var(--ok-text); }
+.text-error { color: var(--error-text); }
+
+/* ------------------------------ Marca ------------------------------ */
+.brand-badge {
+    /* El cuadrado lo dibuja logo.svg (color --logo-fondo); el glifo usa currentColor. */
+    --logo-fondo: var(--btn);
+    display: inline-grid; place-items: center; flex: none;
+    color: #ffffff; width: 56px; height: 56px;
+}
+.brand-badge svg { width: 100%; height: 100%; display: block; }
+.brand-badge-lg { width: 64px; height: 64px; }
+.brand-badge-sm { width: 32px; height: 32px; }
+
+/* ------------------------------ Botones ---------------------------- */
+.btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    font: inherit; font-weight: 400; font-size: 15px; line-height: 1; letter-spacing: -.016em;
+    min-height: 38px; height: 38px; padding: 0 18px;
+    border-radius: var(--pill); border: none;
+    cursor: pointer; text-decoration: none; white-space: nowrap;
+    transition: background-color .15s, color .15s, transform .1s;
+}
+.btn:hover { text-decoration: none; }
+/* Micro-interacción de Apple: todo lo pulsable se encoge al presionar. */
+.btn:active:not([disabled]),
+.seg-btn:active, .brand-btn:active, .icon-btn:active, .pag-mini:active { transform: scale(.95); }
+.btn .icon { width: 17px; height: 17px; }
+.btn-primary { background: var(--btn); color: var(--on-primary); }
+.btn-primary:hover { background: var(--btn-hover); color: var(--on-primary); }
+.btn-outline { background: var(--surface-3); color: var(--on-surface); }      /* secundario (relleno gris) */
+.btn-outline:hover { background: var(--outline-strong); color: var(--on-surface); }
+.btn-ghost { background: transparent; color: var(--primary); }
+.btn-ghost:hover { background: var(--surface-2); color: var(--primary); }
+.btn-danger { background: var(--error); color: #fff; }
+.btn-danger:hover { background: var(--error-text); color: #fff; }
+.btn-danger-ghost { background: transparent; color: var(--error-text); }
+.btn-danger-ghost:hover { background: var(--error-bg); color: var(--error-text); }
+.btn-block { width: 100%; height: 48px; font-size: 17px; }
+.btn-sm { height: 32px; min-height: 32px; padding: 0 15px; font-size: 14px; }
+.btn-icon { width: 38px; padding: 0; }
+.btn-icon.btn-sm { width: 32px; padding: 0; }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: .42; cursor: not-allowed; }
+
+.icon-btn {
+    display: inline-grid; place-items: center;
+    border: none; background: var(--surface-2); color: var(--on-surface-variant);
+    width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+}
+.icon-btn:hover { background: var(--surface-3); color: var(--on-surface); }
+
+/* Spinner */
+.spinner {
+    width: 18px; height: 18px;
+    border: 2.5px solid rgba(255, 255, 255, .45);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ------------------------------ Cards ------------------------------ */
+.card { background: var(--surface); border-radius: var(--radius-lg); padding: 22px 24px; }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.card-head h3 { display: flex; align-items: center; gap: 9px; }
+.card-head h3 > .icon { color: var(--on-surface-variant); }
+.card-desc { color: var(--on-surface-variant); font-size: 14px; margin: -6px 0 16px; max-width: 900px; }
+.count-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 26px; height: 22px; padding: 0 8px; border-radius: var(--pill);
+    font-size: 12.5px; font-weight: 600; letter-spacing: 0;
+    background: var(--surface-2); color: var(--on-surface-variant);
+}
+
+/* Sección plegable (<details class="card collapsible">) */
+.collapsible { padding: 0; }
+.collapsible > summary {
+    list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px;
+    padding: 18px 24px; border-radius: var(--radius-lg);
+}
+.collapsible > summary::-webkit-details-marker { display: none; }
+.collapsible > summary:hover h3 { color: var(--primary); }
+.collapsible > summary h3 { display: flex; align-items: center; gap: 9px; }
+.collapsible > summary .chev { margin-left: auto; color: var(--on-surface-variant); transition: transform .2s; }
+.collapsible[open] > summary .chev { transform: rotate(180deg); }
+.collapsible-body { padding: 0 24px 22px; display: grid; gap: 14px; }
+
+/* ------------------------------ Alertas ---------------------------- */
+.alert { display: flex; gap: 10px; align-items: flex-start; border-radius: var(--radius); padding: 14px 16px; font-size: 14.5px; }
+.alert > .icon { margin-top: 1px; }
+.alert-body { flex: 1; min-width: 0; }
+.alert a { color: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+.alert-ok { background: var(--ok-bg); color: var(--ok-text); }
+.alert-error { background: var(--error-bg); color: var(--error-text); }
+.alert-warn { background: var(--warn-bg); color: var(--warn-text); }
+.alert ul { margin: 6px 0 0; padding-left: 18px; }
+.alert li + li { margin-top: 3px; }
+
+
+/* ------------------------- Campos -------------------------------- */
+.field { display: block; margin-bottom: 16px; }
+.field-label { display: block; font-size: 13px; font-weight: 600; color: var(--on-surface); margin-bottom: 7px; }
+.field-box {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface-2); border-radius: 12px; padding: 0 12px;
+    transition: background-color .15s;
+}
+.field-box:focus-within { background: var(--surface); outline: 2px solid var(--focus); outline-offset: 0; }
+.field-icon { width: 18px; height: 18px; color: var(--on-surface-variant); flex: none; }
+.field-box input {
+    flex: 1; min-width: 0; border: none; background: transparent; outline: none;
+    font: inherit; font-size: 16px; color: var(--on-surface); padding: 13px 0;
+}
+.field-box input::placeholder { color: var(--on-surface-variant); }
+
+/* Autocompletado del navegador: respeta el tema (evita el fondo blanco de Chrome). */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--on-surface);
+    -webkit-box-shadow: 0 0 0 1000px var(--surface-2) inset;
+    box-shadow: 0 0 0 1000px var(--surface-2) inset;
+    caret-color: var(--on-surface);
+    transition: background-color 9999s ease-out 0s;
+}
+/* ------------------------- Formularios ----------------------------- */
+.grid-form { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 16px; margin-top: 14px; }
+.grid-form label, .form-section label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: var(--on-surface); }
+.grid-form input, .grid-form select,
+.form-section input, .form-section select, .form-section textarea,
+.input-search, .input-select {
+    font: inherit; font-size: 15px; font-weight: 400; color: var(--on-surface);
+    background: var(--surface-2); border: none;
+    border-radius: var(--radius-sm); padding: 0 12px; height: 38px; outline: none;
+    transition: background-color .15s;
+}
+.form-section textarea { height: auto; padding: 10px 12px; }
+.grid-form input:focus, .grid-form select:focus,
+.form-section input:focus, .form-section select:focus, .form-section textarea:focus,
+.input-search:focus, .input-select:focus {
+    background: var(--surface); outline: 2px solid var(--focus); outline-offset: 0;
+}
+.input-select { padding-right: 8px; cursor: pointer; }
+.input-select.sm { height: 30px; font-size: 14px; padding: 0 6px 0 10px; }
+.form-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; align-items: center; }
+
+/* Subir archivo (.file-drop): input real oculto y accesible, área clicable y arrastrable. */
+.file-drop { position: relative; display: grid; gap: 10px; }
+.file-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; left: 16px; top: 16px; }
+.file-drop-area {
+    display: flex; align-items: center; gap: 16px; cursor: pointer;
+    padding: 20px 22px; border-radius: var(--radius);
+    background: var(--surface-2);
+    transition: background-color .15s;
+}
+.file-drop-area:hover, .file-drop.dragging .file-drop-area { background: var(--primary-soft); }
+.file-input:focus-visible + .file-drop-area { outline: 2px solid var(--focus); outline-offset: 2px; }
+.file-drop-ico {
+    flex: none; width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center;
+    background: var(--surface); color: var(--primary);
+}
+.file-drop-txt { display: grid; gap: 2px; min-width: 0; }
+.file-drop-title { font-weight: 600; font-size: 16px; color: var(--on-surface); }
+.file-drop-sub { font-size: 14px; color: var(--on-surface-variant); }
+.file-drop.has-file .file-drop-area { background: var(--ok-bg); }
+.file-drop.has-file .file-drop-ico { color: var(--ok-text); }
+.file-drop-name { overflow-wrap: anywhere; }
+.file-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+/* ======================= APP / HEADER ==============================
+   Dos filas, como apple.com:
+   .global-nav  barra negra de 44px: marca (botón al Resumen), herramientas
+                de admin, tema y usuario. Texto blanco de 12-14px.
+   .sub-nav     barra esmerilada de 52px (Parchment 80 % + blur): título de la
+                sección a la izquierda (21px/600) y pestañas a la derecha. */
+.app-body { min-height: 100vh; background: var(--bg); }
+.topbar { position: sticky; top: 0; z-index: 30; }
+.global-nav { background: var(--global-nav); color: var(--on-global-nav); }
+.global-row, .sub-row {
+    display: flex; align-items: center; gap: 16px;
+    max-width: 1440px; margin: 0 auto; padding: 0 24px;
+}
+.global-row { height: var(--global-h); }
+.brand-btn {
+    display: flex; align-items: center; gap: 9px; flex: none;
+    text-decoration: none; color: var(--on-global-nav);
+    padding: 4px 12px 4px 4px; border-radius: var(--radius-sm);
+    transition: background-color .15s, transform .1s;
+}
+.brand-btn:hover { background: rgba(255, 255, 255, .12); color: var(--on-global-nav); text-decoration: none; }
+.brand-btn .brand-badge-sm { width: 30px; height: 30px; }
+.brand-txt { font-size: 14px; font-weight: 600; letter-spacing: -.016em; }
+
+.global-actions { display: flex; align-items: center; gap: 2px; margin-left: auto; flex: none; }
+.nav-icon-btn {
+    display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 0;
+    color: var(--on-global-nav-muted); background: transparent; border: none; border-radius: var(--radius-sm); cursor: pointer;
+    transition: color .15s, background-color .15s, transform .1s;
+}
+.nav-icon-btn:hover { color: var(--on-global-nav); background: rgba(255, 255, 255, .12); }
+.nav-icon-btn:active { transform: scale(.95); }
+.nav-icon-btn .icon { width: 17px; height: 17px; }
+
+.sub-nav {
+    background: var(--nav-bg);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+}
+.sub-row { height: var(--subnav-h); }
+.sub-title {
+    font-family: var(--font-display); font-size: 21px; font-weight: 600; letter-spacing: .011em; line-height: 1.19;
+    color: var(--on-surface); text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+}
+a.sub-title:hover { color: var(--on-surface); text-decoration: none; }
+.sub-back { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; font-size: 14px; color: var(--primary); white-space: nowrap; flex: none; }
+.sub-back .icon { width: 16px; height: 16px; }
+
+.theme-btn .t-sol { display: none; }
+:root[data-theme="dark"] .theme-btn .t-sol { display: inline-block; }
+:root[data-theme="dark"] .theme-btn .t-luna { display: none; }
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-btn .t-sol { display: inline-block; }
+    :root:not([data-theme="light"]) .theme-btn .t-luna { display: none; }
+}
+
+.app-main { max-width: 1440px; margin: 0 auto; padding: 20px 24px 40px; display: grid; gap: 18px; }
+/* Los items del grid traen min-width:auto por defecto: sin esto, una tabla ancha
+   no cabe en la columna y empuja toda la página hacia la derecha. */
+.app-main > * { min-width: 0; }
+
+/* Control segmentado al estilo Apple */
+.seg { display: inline-flex; background: var(--surface-3); border-radius: var(--pill); padding: 3px; gap: 2px; }
+.seg-btn { border: 0; background: transparent; color: var(--on-surface); font: inherit; font-size: 13.5px; font-weight: 400; height: 30px; padding: 0 14px; border-radius: var(--pill); cursor: pointer; }
+.seg-btn:hover { background: color-mix(in srgb, var(--surface) 50%, transparent); }
+.seg-btn.active { background: var(--surface); font-weight: 600; }
+
+/* Chips de estado: relleno tenue del color y punto; texto siempre --on-surface. */
+.chip {
+    display: inline-flex; align-items: center; gap: 6px; height: 22px;
+    font-size: 13px; font-weight: 400; padding: 0 10px; border-radius: var(--pill);
+    background: color-mix(in srgb, var(--chip, var(--btn)) 15%, var(--surface));
+    color: var(--on-surface);
+}
+.chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--chip, var(--btn)); flex: none; }
+.chip-ok { --chip: var(--ok); }
+.chip-warn { --chip: var(--warn); }
+.chip-error { --chip: var(--error); }
+
+/* ======================= PORTAL DE IMPRESIÓN =======================
+   Piezas propias del portal, con los mismos tokens del sistema. */
+.app-main > .alert, #mensaje .alert { margin: 0; }
+#mensaje:empty { display: none; }
+.app-estrecha { max-width: 520px; }
+.mb-0 { margin-bottom: 0; }
+.mb-14 { margin-bottom: 14px; }
+.mt-10 { margin-top: 10px; }
+.mt-14 { margin-top: 14px; }
+.sub-detalle { margin-left: auto; font-size: 14px; color: var(--on-surface-variant); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.pie { text-align: center; margin: 0; font-size: 13px; }
+.pie .icon-sm { margin: -2px 4px 0 0; }
+
+/* Dos columnas: documento (vista previa) y opciones (fija al hacer scroll). */
+.imprimir-grid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 18px; align-items: start; }
+.opciones-card { position: sticky; top: calc(var(--global-h) + var(--subnav-h) + 16px); display: grid; gap: 18px; }
+.opciones-card .card-head { margin-bottom: 0; }
+.opcion { display: grid; gap: 0; border: 0; padding: 0; margin: 0; min-width: 0; }
+.opcion > legend { float: left; width: 100%; padding: 0; }
+.opcion > legend + * { clear: both; }
+.field-hint { display: block; font-size: 13px; color: var(--on-surface-variant); margin-top: 6px; }
+.field-hint.error { color: var(--error-text); }
+.input-full { width: 100%; }
+.seg-full { display: flex; width: 100%; }
+.seg-full .seg-btn { flex: 1 1 0; padding: 0 8px; white-space: nowrap; }
+.seg-btn[disabled] { opacity: .42; cursor: not-allowed; }
+.seg-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 0; }
+
+/* Copias: botones - y + alrededor del número, y casilla "Intercalar". */
+.fila-copias { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.stepper { display: inline-flex; align-items: center; gap: 6px; background: var(--surface-2); border-radius: var(--pill); padding: 3px; }
+.stepper .icon-btn { background: var(--surface); color: var(--on-surface); }
+.stepper .icon-btn:hover { background: var(--surface-3); }
+.stepper input {
+    width: 52px; height: 32px; border: 0; background: transparent; text-align: center;
+    font: inherit; font-size: 16px; font-weight: 600; color: var(--on-surface); -moz-appearance: textfield;
+}
+.stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.stepper input:focus { outline: 2px solid var(--focus); border-radius: var(--radius-sm); }
+.check { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; cursor: pointer; }
+.check input { width: 18px; height: 18px; accent-color: var(--btn); margin: 0; }
+
+/* Resumen de lo que se va a imprimir y progreso de subida/envío. */
+.resumen-imp { background: var(--surface-2); border-radius: var(--radius); padding: 12px 14px; font-size: 14px; display: grid; gap: 2px; }
+.resumen-imp strong { font-size: 15px; }
+.progreso { display: grid; gap: 6px; }
+.progreso-barra { height: 6px; border-radius: var(--pill); background: var(--surface-3); overflow: hidden; }
+.progreso-barra span { display: block; height: 100%; width: 0; background: var(--btn); border-radius: inherit; transition: width .2s; }
+.progreso.indeterminado .progreso-barra span { width: 35%; animation: deslizar 1.2s ease-in-out infinite; }
+@keyframes deslizar { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
+
+/* Vista previa: rejilla de miniaturas que se pueden marcar o desmarcar. */
+.vista { margin-top: 18px; display: grid; gap: 12px; }
+.vista-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.vista-acciones { display: flex; gap: 4px; }
+.pag-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 14px; }
+.pag-mini {
+    position: relative; display: grid; gap: 6px; justify-items: center; align-content: start;
+    padding: 8px 8px 6px; border: 0; border-radius: var(--radius); cursor: pointer;
+    background: transparent; color: var(--on-surface); font: inherit; font-size: 13px;
+    transition: background-color .15s, transform .1s, opacity .15s;
+}
+.pag-mini:hover { background: var(--surface-2); }
+.pag-mini[aria-pressed="true"] { background: var(--primary-soft); }
+.pag-mini[aria-pressed="true"] .pag-num { color: var(--on-primary-soft); font-weight: 600; }
+.pag-mini[aria-pressed="false"] .pag-lienzo { opacity: .35; }
+.pag-lienzo {
+    width: 100%; aspect-ratio: 8.5 / 11; display: grid; place-items: center;
+    background: #ffffff; border-radius: 4px; outline: 1px solid var(--outline); overflow: hidden;
+}
+.pag-lienzo canvas { max-width: 100%; max-height: 100%; display: block; }
+.pag-marca {
+    position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; border-radius: 50%;
+    display: grid; place-items: center; background: var(--btn); color: #ffffff;
+}
+.pag-marca .icon-sm { width: 14px; height: 14px; }
+.pag-mini[aria-pressed="false"] .pag-marca { background: var(--surface-3); color: transparent; }
+.pag-num { color: var(--on-surface-variant); }
+.btn .spinner { width: 16px; height: 16px; }
+
+/* ------------------------------ Responsive ------------------------- */
+@media (max-width: 960px) {
+    .imprimir-grid { grid-template-columns: 1fr; }
+    .opciones-card { position: static; }
+}
+@media (max-width: 640px) {
+    .global-row, .sub-row { padding-left: 12px; padding-right: 12px; gap: 8px; }
+    .sub-title { font-size: 19px; }
+    .sub-detalle { display: none; }
+    .app-main { padding: 12px 12px 28px; gap: 14px; }
+    .card { padding: 18px 16px; }
+    .pag-grid { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; }
+    .seg-full .seg-btn { font-size: 13px; padding: 0 4px; }
+}

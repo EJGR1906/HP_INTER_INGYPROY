@@ -39,8 +39,9 @@ const GUARDAR_COPIA = true;
 const HISTORIAL_MAX = 25;
 
 // --- LÍMITES / SEGURIDAD ---------------------------------------------
-// Tamaño máximo por archivo (MB).
-const MAX_MB = 25;
+// Tamaño máximo por archivo (MB). Debe caber en upload_max_filesize y
+// post_max_size de .user.ini y en FcgidMaxRequestLen de httpd.conf.
+const MAX_MB = 200;
 
 // Extensiones que se envían tal cual (ya son "listas para imprimir").
 const EXT_DIRECTAS = ['pdf', 'ps', 'prn', 'pcl', 'txt', 'text', 'log'];
@@ -48,6 +49,25 @@ const EXT_DIRECTAS = ['pdf', 'ps', 'prn', 'pcl', 'txt', 'text', 'log'];
 // Extensiones que se intentan convertir a PDF antes de imprimir
 // (requiere LibreOffice instalado en el servidor; es opcional).
 const EXT_CONVERTIBLES = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp', 'rtf'];
+
+// --- OPCIONES DE IMPRESIÓN -------------------------------------------
+// Tamaños de papel que se ofrecen (clave PJL => nombre visible). La clave
+// es la que entiende la impresora en "@PJL SET PAPER=...".
+const PAPELES = [
+    'LETTER'    => 'Carta (216 x 279 mm)',
+    'LEGAL'     => 'Oficio (216 x 356 mm)',
+    'A4'        => 'A4 (210 x 297 mm)',
+    'EXECUTIVE' => 'Ejecutivo (184 x 267 mm)',
+];
+// Papel elegido por defecto (una clave de PAPELES).
+const PAPEL_DEFECTO = 'LETTER';
+
+// Máximo de copias por trabajo.
+const COPIAS_MAX = 99;
+
+// ¿La impresora tiene unidad de doble cara (dúplex)? Si es false, la
+// opción no se muestra.
+const DUPLEX_DISPONIBLE = true;
 
 // Contraseña simple de acceso al portal (opcional). Deja '' para NO pedir
 // contraseña (herramienta interna de LAN). Si pones algo, se pedirá al entrar.
