@@ -18,7 +18,7 @@ elige el archivo, ajusta las opciones y pulsa **Imprimir**.
 | Copias | 1 a 99, intercaladas o no. |
 | Tamaño de papel | Carta, Oficio, A4, Ejecutivo (lista en `config.php`). |
 | Orientación y escala | Automática, vertical u horizontal; ajustar al papel o tamaño real. |
-| Doble cara | No, borde largo o borde corto. |
+| Doble cara | Desactivada: la impresora (M601n) no tiene unidad dúplex. Se activa con `DUPLEX_DISPONIBLE` si se cambia el equipo. |
 | Formatos | PDF, JPG, PNG, TXT, PS, PCL/PRN. Office (DOCX, XLSX, PPTX...) si el servidor tiene LibreOffice. |
 
 ## Instalación rápida
