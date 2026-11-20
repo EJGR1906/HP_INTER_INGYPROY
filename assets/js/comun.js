@@ -27,6 +27,7 @@
         'chevron-abajo': 'M7.4 8.6 12 13.2l4.6-4.6L18 10l-6 6-6-6 1.4-1.4Z',
         'basura': 'M9 3h6l1 2h4v2H4V5h4l1-2ZM6 9h12l-1 12H7L6 9Zm2.2 2 .7 8h6.2l.7-8H8.2Z',
         'refrescar': 'M17.7 6.3A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.8-4.3L13 11h7V4l-2.3 2.3Z',
+        'calendario': 'M7 2h2v2h6V2h2v2h3v18H4V4h3V2ZM6 10v10h12V10H6Zm0-2h12V6H6v2Z',
         'menos': 'M5 11h14v2H5v-2Z',
         'impresora': 'M6 2h12v6h-2V4H8v4H6V2ZM4 8h16a2 2 0 0 1 2 2v8h-4v-2h2v-6H4v6h2v2H2v-8a2 2 0 0 1 2-2Zm2 6h12v8H6v-8Zm2 2v4h8v-4H8Zm8-5h2v2h-2v-2Z',
         'copias': 'M8 2h10l4 4v12H8V2Zm2 2v12h10V7h-3V4h-7ZM4 6h2v14h10v2H4V6Z',

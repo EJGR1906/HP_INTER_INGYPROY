@@ -65,6 +65,10 @@ Lee antes: [README.md](README.md), [PRD.md](PRD.md), [Architecture.md](Architect
   Apache las sirva como JavaScript. Para actualizarlas: `npm pack` de la versión exacta,
   copiar los `.min` y su licencia, y cambiar la versión en README y Architecture.
 - La interfaz debe seguir funcionando sin JavaScript (imprime el archivo completo).
+- «Recientes» lee `archivo/_registro.jsonl`. La copia guardada lleva la extensión del
+  archivo realmente impreso (el PDF que armó el navegador), no la del original, para
+  poder reimprimirla. Las filas sin la clave `opciones` son anteriores a `ZONA_HORARIA`
+  y están en UTC (`fecha_registro()` las convierte).
 
 ## Flujo de trabajo con Git
 - Ramas y Pull Requests para todo; `main` se actualiza solo por merge de PR.

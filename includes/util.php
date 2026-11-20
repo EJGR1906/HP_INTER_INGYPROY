@@ -164,7 +164,11 @@ function registrar_impresion(string $rutaOrigen, string $nombreMostrar, array $m
     $destino = dir_archivo() . DIRECTORY_SEPARATOR . $mes;
     if (!is_dir($destino)) @mkdir($destino, 0775, true);
 
-    $seguro   = date('Ymd_His') . '_' . bin2hex(random_bytes(2)) . '__' . limpiar_nombre($nombreMostrar);
+    // El nombre visible puede ser "foto.png" aunque lo impreso sea el PDF que armó
+    // el navegador: la copia lleva la extensión del archivo real para poder reimprimirla.
+    $extReal  = strtolower(pathinfo($rutaOrigen, PATHINFO_EXTENSION));
+    $baseNom  = limpiar_nombre(pathinfo($nombreMostrar, PATHINFO_FILENAME));
+    $seguro   = date('Ymd_His') . '_' . bin2hex(random_bytes(2)) . '__' . $baseNom . ($extReal !== '' ? '.' . $extReal : '');
     @copy($rutaOrigen, $destino . DIRECTORY_SEPARATOR . $seguro);
 
     $fila = [
@@ -177,12 +181,33 @@ function registrar_impresion(string $rutaOrigen, string $nombreMostrar, array $m
         'bytes'    => (int) ($meta['bytes'] ?? 0),
         'opciones' => (string) ($meta['opciones'] ?? ''),
     ];
+    anotar_registro($fila);
+    return $fila['guardado'];
+}
+
+/** Agrega una línea al registro (archivo/_registro.jsonl). */
+function anotar_registro(array $fila): void
+{
     @file_put_contents(
         dir_archivo() . DIRECTORY_SEPARATOR . '_registro.jsonl',
         json_encode($fila, JSON_UNESCAPED_UNICODE) . "\n",
         FILE_APPEND | LOCK_EX
     );
-    return $fila['guardado'];
+}
+
+/** Anota una reimpresión (no guarda otra copia: apunta a la misma). */
+function registrar_reimpresion(string $guardado, string $nombreMostrar, array $meta): void
+{
+    anotar_registro([
+        'ts'       => date('Y-m-d H:i:s'),
+        'ip'       => $_SERVER['REMOTE_ADDR'] ?? '',
+        'original' => $nombreMostrar,
+        'guardado' => $guardado,
+        'metodo'   => $meta['metodo'] ?? '',
+        'estado'   => 'reimpreso',
+        'bytes'    => (int) ($meta['bytes'] ?? 0),
+        'opciones' => (string) ($meta['opciones'] ?? ''),
+    ]);
 }
 
 /** Últimas N entradas del registro (más recientes primero). */

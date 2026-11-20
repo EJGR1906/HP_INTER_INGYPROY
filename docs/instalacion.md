@@ -75,7 +75,9 @@ rechazan con un mensaje claro y se pide subirlos como PDF.
 | `IMPRESORA_METODO` | `auto` (RAW y si falla FTP), `raw` o `ftp` |
 | `RAW_PUERTO` | Puerto JetDirect (9100) |
 | `FTP_USUARIO`, `FTP_CLAVE`, `FTP_PUERTO_DIR` | Acceso al FTP de impresión (`PORT` o `PORT1`) |
-| `GUARDAR_COPIA`, `HISTORIAL_MAX` | Copias de lo impreso en `archivo/` |
+| `ZONA_HORARIA` | Hora del registro (`America/Caracas`; sin ella PHP usa UTC) |
+| `GUARDAR_COPIA` | Guarda copia de lo impreso en `archivo/` |
+| `HISTORIAL_MAX` | Filas de «Recientes» (0 = ocultar la sección) |
 | `MAX_MB` | Tamaño máximo por archivo |
 | `EXT_DIRECTAS`, `EXT_CONVERTIBLES` | Formatos aceptados |
 | `PAPELES`, `PAPEL_DEFECTO` | Tamaños de papel que se ofrecen (clave PJL => nombre) |

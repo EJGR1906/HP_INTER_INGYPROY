@@ -60,3 +60,6 @@ lo mismo con colores fijos. **No** se usa el logo de HP.
 | `.pag-grid`, `.pag-mini`, `.pag-lienzo`, `.pag-marca`, `.pag-num` | Portal | Miniaturas; `aria-pressed="true"` = página elegida (fondo `--primary-soft`) |
 | `.resumen-imp` | Portal | Resumen: páginas, copias y hojas |
 | `.progreso`, `.progreso-barra` | Portal | Progreso de subida (`.indeterminado` mientras imprime) |
+| `.recientes`, `.reciente`, `.reciente-ico`, `.reciente-nombre`, `.form-reimprimir` | Portal | Lista «Recientes»; filas separadas por `--outline` como las filas de tabla del Dashboard |
+| `.chip`, `.chip-warn` | Dashboard | «Copia no disponible» |
+| `.spinner-tinta` | Portal | Spinner sobre botón gris |

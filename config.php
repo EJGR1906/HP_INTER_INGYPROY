@@ -6,6 +6,12 @@
 // No hace falta tocar el resto del código.
 // =====================================================================
 
+// --- ZONA HORARIA ----------------------------------------------------
+// Hora con la que se anotan y muestran las impresiones. Sin esto PHP usa
+// UTC y el historial sale 4 horas adelantado (el registro de nov-2026 lo
+// muestra: archivo creado a las 16:10, anotado 20:10).
+const ZONA_HORARIA = 'America/Caracas';
+
 // --- IMPRESORA -------------------------------------------------------
 // IP de la impresora (la misma con la que probaste el FTP).
 const IMPRESORA_IP = '10.2.200.74';
@@ -35,7 +41,9 @@ const FTP_PUERTO_DIR = 'PORT';
 // Pon false si NO quieres guardar copias.
 const GUARDAR_COPIA = true;
 
-// Cuántas entradas del historial mostrar en la página.
+// Cuántas impresiones recientes mostrar en la página (sección «Recientes»,
+// con botón para reimprimir). Ojo: todos los que abren el portal ven los
+// nombres de esos documentos. Pon 0 para no mostrar la lista.
 const HISTORIAL_MAX = 25;
 
 // --- LÍMITES / SEGURIDAD ---------------------------------------------

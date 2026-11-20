@@ -18,6 +18,7 @@ Formato: `- [ ]` abierto, `- [x]` hecho con fecha.
 - [x] T-07 Interfaz con el sistema de diseño del Dashboard FTTM, sin emojis ni « · ». ✅ 2026-11-20
 - [x] T-08 Documentación: README, PRD, Architecture, Design-System, PLAN, CLAUDE, AGENTS, docs/. ✅ 2026-11-20
 - [x] T-09 `tools/impresora_falsa.php` para probar sin la impresora. ✅ 2026-11-20
+- [x] T-10 Sección «Recientes» con botón Reimprimir (usa las opciones del panel) y registro de reimpresiones; hora local con `ZONA_HORARIA`. ✅ 2026-11-20
 
 ## Tareas del dueño
 - [ ] H-01 Borrar el acceso directo `C:\wamp64\www\HP` y crear la unión `mklink /J C:\wamp64\www\HP C:\Proyectos\HP`.
@@ -25,8 +26,8 @@ Formato: `- [ ]` abierto, `- [x]` hecho con fecha.
 - [ ] H-03 Copiar al servidor los archivos de este repo (o `git pull` en `C:\Proyectos\HP`) conservando `archivo/`.
 - [ ] H-04 Probar un PDF de varias páginas con rango, 2 copias y doble cara; confirmar que la M601 respeta copias y papel.
 - [ ] H-05 Confirmar si la M601 tiene unidad dúplex; si no, `DUPLEX_DISPONIBLE = false`.
+- [ ] H-06 Decidir si «Recientes» debe verse para todos (muestra nombres de documentos personales). Para ocultarla: `HISTORIAL_MAX = 0`.
 
 ## Pendiente técnico
-- [ ] T-10 Botón de reimprimir en la página (el backend `accion=reimprimir` ya existe) e historial visible.
 - [ ] T-11 Varias hojas por cara (2 o 4 páginas por hoja).
 - [ ] T-12 Pruebas automáticas (Playwright + impresora falsa) en CI.

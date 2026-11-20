@@ -23,7 +23,7 @@ red (opcionalmente con una clave común, `CLAVE_ACCESO`).
 | RF-09 | Imprimir imágenes JPG y PNG. | Hecho |
 | RF-10 | Office (DOCX, XLSX, PPTX...) convertido a PDF con LibreOffice si está instalado. | Hecho (depende del servidor) |
 | RF-11 | Guardar copia e historial de lo impreso, avisando en la página (`GUARDAR_COPIA`). | Hecho |
-| RF-12 | Reimprimir una copia guardada (`accion=reimprimir`). | Backend hecho; sin botón en la página |
+| RF-12 | Sección «Recientes»: últimas impresiones con botón Reimprimir (con las opciones del panel). | Hecho |
 | RF-13 | Tema claro y oscuro, usable en el teléfono. | Hecho |
 
 ## Requisitos no funcionales

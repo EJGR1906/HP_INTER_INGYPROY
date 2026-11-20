@@ -18,7 +18,11 @@ index.php
   8. imprimir_listo(): envolver_pjl() crea trabajo.prn = cabecera PJL + documento + EOJ
   9. enviar_raw() a 10.2.200.74:9100, o enviar_ftp() (método 'auto': RAW y si falla FTP)
  10. registrar_impresion(): copia en archivo/AAAA-MM/ y línea en archivo/_registro.jsonl
- 11. Responde JSON {ok, msg} (o flash + redirect si no hay JS)
+ 11. Responde JSON {ok, msg} (o flash + redirect si no hay JS); el JS refresca «Recientes»
+
+Reimprimir (sección «Recientes»): POST accion=reimprimir con guardado + opciones del panel
+  -> ruta_guardado_segura() -> imprimir_listo() -> registrar_reimpresion() (línea nueva, sin otra copia).
+GET ?parcial=recientes devuelve solo la lista (pintar_historial).
 ```
 
 ## Archivos
@@ -27,8 +31,9 @@ index.php
 | `index.php` | Entrada única: acceso con clave opcional, acciones POST (`imprimir`, `convertir`, `reimprimir`) y la vista |
 | `config.php` | Todos los ajustes (impresora, método, límites, papeles, copias, dúplex, clave) |
 | `includes/impresora.php` | `opciones_impresion`, `describir_opciones`, `cabecera_pjl`, `envolver_pjl`, `enviar_raw`, `enviar_ftp`, `convertir_pdf`, `preparar_listo`, `imprimir_listo` |
-| `includes/util.php` | Sesión, CSRF, flash, `responder` (JSON o PRG), `limite_subida_bytes`, `mensaje_error_subida`, `dir_trabajo`, registro e historial |
+| `includes/util.php` | Sesión, CSRF, flash, `responder` (JSON o PRG), `limite_subida_bytes`, `mensaje_error_subida`, `dir_trabajo`, `registrar_impresion`, `registrar_reimpresion`, `leer_historial` |
 | `includes/cabecera.php` | `pagina_head()` y `cabecera()` (header de dos filas), `script_js()` |
+| `includes/historial.php` | `pintar_historial()` y `fecha_registro()`: lista «Recientes» con formularios de reimpresión |
 | `includes/iconos.php` | Catálogo de íconos SVG (`icono()`) |
 | `assets/css/app.css` | Sistema de diseño (copiado del Dashboard FTTM) + piezas del portal |
 | `assets/js/comun.js` | Tema claro/oscuro, caja de subir archivo, `Iconos()`, `esc()`, `tamanoLegible()` |

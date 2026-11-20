@@ -450,6 +450,21 @@ a.sub-title:hover { color: var(--on-surface); text-decoration: none; }
 .pag-mini[aria-pressed="false"] .pag-marca { background: var(--surface-3); color: transparent; }
 .pag-num { color: var(--on-surface-variant); }
 .btn .spinner { width: 16px; height: 16px; }
+.spinner-tinta { border-color: var(--outline-strong); border-top-color: var(--on-surface); }
+
+/* Recientes: lista de impresiones con botón Reimprimir. Filas separadas por
+   el filete neutro, como las filas de tabla del Dashboard. */
+.recientes { list-style: none; margin: 0; padding: 0; }
+.reciente { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-top: 1px solid var(--outline); }
+.reciente:first-child { border-top: 0; padding-top: 0; }
+.reciente-ico {
+    flex: none; width: 36px; height: 36px; border-radius: var(--radius-sm); display: grid; place-items: center;
+    background: var(--surface-2); color: var(--on-surface-variant);
+}
+.reciente-txt { flex: 1; min-width: 0; display: grid; gap: 1px; }
+.reciente-nombre { font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+.reciente-txt .muted { font-size: 13px; }
+.form-reimprimir { flex: none; margin: 0; }
 
 /* ------------------------------ Responsive ------------------------- */
 @media (max-width: 960px) {
@@ -464,4 +479,8 @@ a.sub-title:hover { color: var(--on-surface); text-decoration: none; }
     .card { padding: 18px 16px; }
     .pag-grid { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; }
     .seg-full .seg-btn { font-size: 13px; padding: 0 4px; }
+    .reciente { flex-wrap: wrap; }
+    .reciente-ico { display: none; }
+    .form-reimprimir { width: 100%; }
+    .form-reimprimir .btn { width: 100%; }
 }

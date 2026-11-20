@@ -19,6 +19,7 @@ elige el archivo, ajusta las opciones y pulsa **Imprimir**.
 | Tamaño de papel | Carta, Oficio, A4, Ejecutivo (lista en `config.php`). |
 | Orientación y escala | Automática, vertical u horizontal; ajustar al papel o tamaño real. |
 | Doble cara | No, borde largo o borde corto. |
+| Recientes | Últimas impresiones (`HISTORIAL_MAX`) con botón **Reimprimir**. |
 | Formatos | PDF, JPG, PNG, TXT, PS, PCL/PRN. Office (DOCX, XLSX, PPTX...) si el servidor tiene LibreOffice. |
 
 ## Instalación rápida
@@ -48,7 +49,9 @@ Si la página da **403 Forbidden** o no sube archivos grandes, ver
 ## Privacidad
 Con `GUARDAR_COPIA = true` se guarda una copia de cada documento impreso en
 `archivo/AAAA-MM/` y una línea en `archivo/_registro.jsonl`. La página lo avisa.
-La carpeta está bloqueada por HTTP (`archivo/.htaccess`) y **no se versiona**.
+La sección «Recientes» muestra a **todos** los que abren el portal los nombres de esos
+documentos (no su contenido); `HISTORIAL_MAX = 0` la oculta. La carpeta está bloqueada por
+HTTP (`archivo/.htaccess`) y **no se versiona**.
 
 ## Licencias de terceros
 - [pdf.js](https://github.com/mozilla/pdf.js) 4.10.38, Apache 2.0 (`assets/vendor/LICENSE-pdfjs.txt`).
