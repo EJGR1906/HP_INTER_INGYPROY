@@ -7,6 +7,10 @@
 /archivo/*
 !/archivo/.htaccess
 
+# Pruebas locales (impresora falsa, PDFs de prueba)
+/tmp/
+*.bin
+
 # Basura del sistema
 Thumbs.db
 Desktop.ini

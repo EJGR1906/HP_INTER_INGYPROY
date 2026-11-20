@@ -1,0 +1,2 @@
+# includes/ solo la usa PHP desde el disco: nadie la pide por HTTP.
+Require all denied

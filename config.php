@@ -6,6 +6,12 @@
 // No hace falta tocar el resto del código.
 // =====================================================================
 
+// --- ZONA HORARIA ----------------------------------------------------
+// Hora con la que se anotan y muestran las impresiones. Sin esto PHP usa
+// UTC y el historial sale 4 horas adelantado (el registro de nov-2026 lo
+// muestra: archivo creado a las 16:10, anotado 20:10).
+const ZONA_HORARIA = 'America/Caracas';
+
 // --- IMPRESORA -------------------------------------------------------
 // IP de la impresora (la misma con la que probaste el FTP).
 const IMPRESORA_IP = '10.2.200.74';
@@ -35,12 +41,15 @@ const FTP_PUERTO_DIR = 'PORT';
 // Pon false si NO quieres guardar copias.
 const GUARDAR_COPIA = true;
 
-// Cuántas entradas del historial mostrar en la página.
+// Cuántas impresiones recientes mostrar en la página (sección «Recientes»,
+// con botón para reimprimir). Ojo: todos los que abren el portal ven los
+// nombres de esos documentos. Pon 0 para no mostrar la lista.
 const HISTORIAL_MAX = 25;
 
 // --- LÍMITES / SEGURIDAD ---------------------------------------------
-// Tamaño máximo por archivo (MB).
-const MAX_MB = 25;
+// Tamaño máximo por archivo (MB). Debe caber en upload_max_filesize y
+// post_max_size de .user.ini y en FcgidMaxRequestLen de httpd.conf.
+const MAX_MB = 200;
 
 // Extensiones que se envían tal cual (ya son "listas para imprimir").
 const EXT_DIRECTAS = ['pdf', 'ps', 'prn', 'pcl', 'txt', 'text', 'log'];
@@ -48,6 +57,25 @@ const EXT_DIRECTAS = ['pdf', 'ps', 'prn', 'pcl', 'txt', 'text', 'log'];
 // Extensiones que se intentan convertir a PDF antes de imprimir
 // (requiere LibreOffice instalado en el servidor; es opcional).
 const EXT_CONVERTIBLES = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp', 'rtf'];
+
+// --- OPCIONES DE IMPRESIÓN -------------------------------------------
+// Tamaños de papel que se ofrecen (clave PJL => nombre visible). La clave
+// es la que entiende la impresora en "@PJL SET PAPER=...".
+const PAPELES = [
+    'LETTER'    => 'Carta (216 x 279 mm)',
+    'LEGAL'     => 'Oficio (216 x 356 mm)',
+    'A4'        => 'A4 (210 x 297 mm)',
+    'EXECUTIVE' => 'Ejecutivo (184 x 267 mm)',
+];
+// Papel elegido por defecto (una clave de PAPELES).
+const PAPEL_DEFECTO = 'LETTER';
+
+// Máximo de copias por trabajo.
+const COPIAS_MAX = 99;
+
+// ¿La impresora tiene unidad de doble cara (dúplex)? Si es false, la
+// opción no se muestra.
+const DUPLEX_DISPONIBLE = true;
 
 // Contraseña simple de acceso al portal (opcional). Deja '' para NO pedir
 // contraseña (herramienta interna de LAN). Si pones algo, se pedirá al entrar.

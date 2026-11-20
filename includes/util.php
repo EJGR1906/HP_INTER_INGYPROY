@@ -1,6 +1,7 @@
 <?php
 // =====================================================================
-// lib/util.php — Sesión, CSRF, flash y REGISTRO VISIBLE de impresiones.
+// includes/util.php — Sesión, CSRF, flash, respuestas (JSON o redirect),
+// límites de subida y REGISTRO VISIBLE de impresiones.
 // ---------------------------------------------------------------------
 // El registro es TRANSPARENTE: la página avisa de que se guarda una copia
 // de cada documento y muestra el historial a quien use el portal. La
@@ -51,6 +52,79 @@ function tomar_flash(): ?array
     $f = $_SESSION['flash']; unset($_SESSION['flash']); return $f;
 }
 
+/** ¿La petición viene del JS de la página (XHR/fetch)? Entonces se responde JSON. */
+function es_xhr(): bool
+{
+    return strtolower((string) ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '')) === 'xmlhttprequest';
+}
+
+/**
+ * Termina la petición POST con un mensaje: JSON si viene del JS, o flash +
+ * redirect (patrón PRG) si viene de un formulario sin JS.
+ */
+function responder(string $tipo, string $msg, int $codigo = 200): void
+{
+    if (es_xhr()) {
+        http_response_code($tipo === 'ok' ? 200 : ($codigo !== 200 ? $codigo : 422));
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['ok' => $tipo === 'ok', 'msg' => $msg], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    set_flash($tipo, $msg);
+    header('Location: ' . strtok($_SERVER['REQUEST_URI'], '?'));
+    exit;
+}
+
+/** Convierte "200M", "1G", "512K" de php.ini a bytes. */
+function ini_bytes(string $valor): int
+{
+    $valor = trim($valor);
+    if ($valor === '') return 0;
+    $n = (float) $valor;
+    switch (strtolower(substr($valor, -1))) {
+        case 'g': $n *= 1024;
+        // no break
+        case 'm': $n *= 1024;
+        // no break
+        case 'k': $n *= 1024;
+    }
+    return (int) $n;
+}
+
+/** Tamaño máximo real de subida: el menor entre MAX_MB y los límites de PHP. */
+function limite_subida_bytes(): int
+{
+    $limites = [MAX_MB * 1024 * 1024];
+    foreach (['upload_max_filesize', 'post_max_size'] as $k) {
+        $b = ini_bytes((string) ini_get($k));
+        if ($b > 0) $limites[] = $b;
+    }
+    return min($limites);
+}
+
+/** Mensaje claro para cada código de error de subida de PHP. */
+function mensaje_error_subida(int $codigo): string
+{
+    $max = humano_bytes(limite_subida_bytes());
+    switch ($codigo) {
+        case UPLOAD_ERR_INI_SIZE:
+        case UPLOAD_ERR_FORM_SIZE:  return "El archivo supera el límite del servidor ($max).";
+        case UPLOAD_ERR_PARTIAL:    return 'La subida se cortó a medias. Vuelve a intentarlo.';
+        case UPLOAD_ERR_NO_FILE:    return 'No se recibió ningún archivo.';
+        case UPLOAD_ERR_NO_TMP_DIR: return 'El servidor no tiene carpeta temporal para subidas (revisa upload_tmp_dir en php.ini).';
+        case UPLOAD_ERR_CANT_WRITE: return 'El servidor no pudo guardar el archivo (¿disco lleno?).';
+        default:                    return 'No se pudo recibir el archivo (código ' . $codigo . ').';
+    }
+}
+
+/** Crea una carpeta temporal de trabajo única. */
+function dir_trabajo(string $prefijo): string
+{
+    $dir = rtrim(sys_get_temp_dir(), '\\/') . DIRECTORY_SEPARATOR . $prefijo . bin2hex(random_bytes(5));
+    @mkdir($dir, 0775, true);
+    return $dir;
+}
+
 /** Deja un nombre de archivo seguro (sin rutas ni caracteres raros). */
 function limpiar_nombre(string $nombre): string
 {
@@ -63,9 +137,9 @@ function limpiar_nombre(string $nombre): string
 /** Tamaño legible por humanos. */
 function humano_bytes(int $n): string
 {
-    $u = ['B', 'KB', 'MB', 'GB']; $i = 0;
-    while ($n >= 1024 && $i < count($u) - 1) { $n = (int) ($n / 1024); $i++; }
-    return $n . ' ' . $u[$i];
+    $u = ['B', 'KB', 'MB', 'GB']; $i = 0; $v = (float) $n;
+    while ($v >= 1024 && $i < count($u) - 1) { $v /= 1024; $i++; }
+    return ($i >= 2 ? str_replace('.', ',', (string) round($v, 1)) : (string) (int) $v) . ' ' . $u[$i];
 }
 
 /** Carpeta raíz del proyecto (lib/ está un nivel por debajo). */
@@ -90,7 +164,11 @@ function registrar_impresion(string $rutaOrigen, string $nombreMostrar, array $m
     $destino = dir_archivo() . DIRECTORY_SEPARATOR . $mes;
     if (!is_dir($destino)) @mkdir($destino, 0775, true);
 
-    $seguro   = date('Ymd_His') . '_' . bin2hex(random_bytes(2)) . '__' . limpiar_nombre($nombreMostrar);
+    // El nombre visible puede ser "foto.png" aunque lo impreso sea el PDF que armó
+    // el navegador: la copia lleva la extensión del archivo real para poder reimprimirla.
+    $extReal  = strtolower(pathinfo($rutaOrigen, PATHINFO_EXTENSION));
+    $baseNom  = limpiar_nombre(pathinfo($nombreMostrar, PATHINFO_FILENAME));
+    $seguro   = date('Ymd_His') . '_' . bin2hex(random_bytes(2)) . '__' . $baseNom . ($extReal !== '' ? '.' . $extReal : '');
     @copy($rutaOrigen, $destino . DIRECTORY_SEPARATOR . $seguro);
 
     $fila = [
@@ -101,13 +179,35 @@ function registrar_impresion(string $rutaOrigen, string $nombreMostrar, array $m
         'metodo'   => $meta['metodo'] ?? '',
         'estado'   => $meta['estado'] ?? '',
         'bytes'    => (int) ($meta['bytes'] ?? 0),
+        'opciones' => (string) ($meta['opciones'] ?? ''),
     ];
+    anotar_registro($fila);
+    return $fila['guardado'];
+}
+
+/** Agrega una línea al registro (archivo/_registro.jsonl). */
+function anotar_registro(array $fila): void
+{
     @file_put_contents(
         dir_archivo() . DIRECTORY_SEPARATOR . '_registro.jsonl',
         json_encode($fila, JSON_UNESCAPED_UNICODE) . "\n",
         FILE_APPEND | LOCK_EX
     );
-    return $fila['guardado'];
+}
+
+/** Anota una reimpresión (no guarda otra copia: apunta a la misma). */
+function registrar_reimpresion(string $guardado, string $nombreMostrar, array $meta): void
+{
+    anotar_registro([
+        'ts'       => date('Y-m-d H:i:s'),
+        'ip'       => $_SERVER['REMOTE_ADDR'] ?? '',
+        'original' => $nombreMostrar,
+        'guardado' => $guardado,
+        'metodo'   => $meta['metodo'] ?? '',
+        'estado'   => 'reimpreso',
+        'bytes'    => (int) ($meta['bytes'] ?? 0),
+        'opciones' => (string) ($meta['opciones'] ?? ''),
+    ]);
 }
 
 /** Últimas N entradas del registro (más recientes primero). */
