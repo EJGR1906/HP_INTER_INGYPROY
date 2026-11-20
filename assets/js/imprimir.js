@@ -5,11 +5,13 @@
 //     pulsando las miniaturas.
 //   - Arma en el navegador un PDF nuevo solo con las páginas elegidas,
 //     ajustadas al papel y la orientación (pdf-lib, window.PDFLib).
+//   - Cada miniatura es la hoja que saldrá: proporción del papel elegido y la
+//     página encajada según orientación y escala (hojaPara(), la misma cuenta
+//     que construirPdf()).
 //   - Imágenes JPG/PNG: se convierten a PDF aquí mismo.
 //   - Office: se convierte a PDF en el servidor (accion=convertir) si hay
 //     LibreOffice; si no, se imprime completo sin vista previa.
 //   - Sube con barra de progreso (XHR) y muestra la respuesta JSON.
-//   - «Recientes»: reimprime con las opciones del panel y refresca la lista.
 // Copias, intercalar, papel y doble cara viajan como campos del formulario
 // y el servidor los aplica con PJL (includes/impresora.php).
 // =====================================================================
@@ -41,6 +43,7 @@
         editable: false,    // pdf-lib puede rearmarlo
         total: 0,           // páginas
         sel: new Set(),     // índices 0..total-1 seleccionados
+        dims: [],           // [ancho, alto] de cada página tal como se ve (con /Rotate)
         paginas: 'todas', orientacion: 'auto', escala: 'ajustar',
         ocupado: false,
         version: 0,         // descarta cargas viejas si se cambia de archivo
@@ -157,6 +160,7 @@
             b.setAttribute('aria-pressed', String(estado.sel.has(+b.dataset.i)));
         });
         pintarResumen();
+        pintarDuplexAyuda();
     }
 
     // ----------------------------------------------------------- resumen
@@ -182,6 +186,71 @@
             + (n > 1 ? ', ' + n + ' copias' : '') + '</strong><span class="muted">'
             + (hojas === 1 ? '1 hoja' : hojas + ' hojas') + ' de papel ' + window.esc(papel.options[papel.selectedIndex].text.split(' (')[0])
             + (dobles ? ', a doble cara' : '') + '</span>';
+    }
+
+    // ------------------------------------------------ hoja de papel
+    /**
+     * Cómo queda una página de dw x dh puntos (tal como se ve) en la hoja:
+     * tamaño de la hoja (W x H, ya girada si va horizontal) y escala s.
+     * La usan la vista previa y construirPdf(), así lo que se ve es lo que sale.
+     */
+    function hojaPara(dw, dh) {
+        const [pw, ph] = PAPEL_PT[papel.value] || PAPEL_PT.LETTER;
+        const horizontal = estado.orientacion === 'horizontal' || (estado.orientacion === 'auto' && dw > dh);
+        const W = horizontal ? Math.max(pw, ph) : Math.min(pw, ph);
+        const H = horizontal ? Math.min(pw, ph) : Math.max(pw, ph);
+        const s = estado.escala === 'ajustar' ? Math.min(W / dw, H / dh) : 1;
+        return { W, H, s, horizontal };
+    }
+
+    /** Dibuja la miniatura como la hoja que saldrá: proporción del papel y página encajada. */
+    function ajustarMiniatura(b) {
+        const lienzo = b.querySelector('.pag-lienzo');
+        const c = lienzo.querySelector('canvas');
+        const d = estado.dims[+b.dataset.i];
+        if (!estado.editable) {
+            // PDF protegido: se imprime tal cual, la miniatura es la página original.
+            if (d) lienzo.style.aspectRatio = d[0] + ' / ' + d[1];
+            if (c) { c.style.width = '100%'; c.style.height = '100%'; }
+            return;
+        }
+        if (!d) return;
+        const { W, H, s } = hojaPara(d[0], d[1]);
+        lienzo.style.aspectRatio = W + ' / ' + H;
+        if (c) {
+            c.style.width = (d[0] * s / W * 100) + '%';
+            c.style.height = (d[1] * s / H * 100) + '%';
+        }
+    }
+
+    function refrescarMiniaturas() {
+        grid.querySelectorAll('.pag-mini').forEach(ajustarMiniatura);
+        pintarDuplexAyuda();
+    }
+
+    /** Explica cómo se voltean las hojas según la orientación que más se repite. */
+    const duplexAyuda = $('duplexAyuda');
+    function pintarDuplexAyuda() {
+        if (!duplexAyuda || !duplex) return;
+        const modo = duplex.value;
+        if (modo === 'no') { duplexAyuda.textContent = 'Imprime solo por un lado de la hoja.'; return; }
+        let horiz = 0, vert = 0;
+        if (estado.tipo === 'pdf' && estado.editable) {
+            estado.sel.forEach((i) => {
+                const d = estado.dims[i];
+                if (d) { if (hojaPara(d[0], d[1]).horizontal) horiz++; else vert++; }
+            });
+        }
+        const horizontal = horiz > vert;
+        const comoLibro = (modo === 'largo') !== horizontal;   // vertical+largo o horizontal+corto
+        let txt = 'Imprime por los dos lados. ' + (comoLibro
+            ? 'Las hojas se pasan de lado, como un libro.'
+            : 'Las hojas se pasan hacia arriba, como un calendario o un bloc.');
+        if (estado.tipo === 'pdf' && estado.editable && (horiz || vert)) {
+            const sugerido = horizontal ? 'corto' : 'largo';
+            if (modo !== sugerido) txt += ' Para leerlas como un libro, elige «Borde ' + sugerido + '».';
+        }
+        duplexAyuda.textContent = txt;
     }
 
     // ------------------------------------------------------- vista previa
@@ -224,6 +293,20 @@
         }
         grid.appendChild(frag);
         vista.hidden = false;
+        refrescarMiniaturas();
+
+        // Tamaño de todas las páginas (rápido, sin dibujar) para la forma de cada hoja.
+        (async () => {
+            for (let i = 0; i < doc.numPages && version === estado.version; i++) {
+                try {
+                    const v = (await doc.getPage(i + 1)).getViewport({ scale: 1 });
+                    estado.dims[i] = [v.width, v.height];
+                    const b = grid.children[i];
+                    if (b) ajustarMiniatura(b);
+                } catch (e) { /* sin tamaño: queda la hoja por defecto */ }
+            }
+            if (version === estado.version) pintarDuplexAyuda();
+        })();
 
         // Render perezoso: solo las miniaturas visibles, de a una.
         const cola = [];
@@ -241,9 +324,9 @@
                     const c = document.createElement('canvas');
                     c.width = Math.ceil(vp.width); c.height = Math.ceil(vp.height);
                     await pag.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
-                    const lienzo = b.querySelector('.pag-lienzo');
-                    lienzo.style.aspectRatio = vp.width + ' / ' + vp.height;
-                    lienzo.appendChild(c);
+                    estado.dims[+b.dataset.i] = [v1.width, v1.height];
+                    b.querySelector('.pag-lienzo').appendChild(c);
+                    ajustarMiniatura(b);
                 } catch (e) { /* miniatura en blanco */ }
             }
             trabajando = false;
@@ -282,7 +365,7 @@
     // -------------------------------------------------- elegir un archivo
     function reiniciar() {
         estado.version++;
-        Object.assign(estado, { archivo: null, tipo: '', bytes: null, editable: false, total: 0, sel: new Set() });
+        Object.assign(estado, { archivo: null, tipo: '', bytes: null, editable: false, total: 0, sel: new Set(), dims: [] });
         grid.innerHTML = '';
         vista.hidden = true; contador.hidden = true; estadoVista.hidden = true;
         avisar('');
@@ -395,7 +478,7 @@
             $('vistaAyuda').textContent = 'Vista previa solamente.';
             avisar('Este PDF está protegido: se imprimirá completo, sin elegir páginas ni ajustar al papel.');
         } else {
-            $('vistaAyuda').textContent = 'Pulsa una página para quitarla o agregarla a la impresión.';
+            $('vistaAyuda').textContent = 'Así saldrá cada hoja. Pulsa una para quitarla o agregarla.';
         }
         aplicarSeleccion();
     }
@@ -418,9 +501,9 @@
         aplicarSeleccion();
     });
     rango.addEventListener('input', aplicarSeleccion);
-    seg('orientacion', (v) => { estado.orientacion = v; });
-    seg('escala', (v) => { estado.escala = v; });
-    if (duplex) seg('duplex', (v) => { duplex.value = v; pintarResumen(); });
+    seg('orientacion', (v) => { estado.orientacion = v; refrescarMiniaturas(); });
+    seg('escala', (v) => { estado.escala = v; refrescarMiniaturas(); });
+    if (duplex) seg('duplex', (v) => { duplex.value = v; pintarResumen(); pintarDuplexAyuda(); });
 
     const fijarCopias = (n) => {
         copias.value = Math.max(1, Math.min(cfg.copiasMax || 99, n || 1));
@@ -431,7 +514,7 @@
     $('copiasMas').addEventListener('click', () => fijarCopias((parseInt(copias.value, 10) || 1) + 1));
     copias.addEventListener('change', () => fijarCopias(parseInt(copias.value, 10)));
     copias.addEventListener('input', pintarResumen);
-    papel.addEventListener('change', pintarResumen);
+    papel.addEventListener('change', () => { pintarResumen(); refrescarMiniaturas(); });
     fijarCopias(1);
 
     // ------------------------------------------ armar el PDF a imprimir
@@ -442,14 +525,6 @@
         const indices = [...estado.sel].sort((a, b) => a - b);
         const out = await PDFDocument.create();
 
-        // Sin transformar: copia tal cual las páginas elegidas.
-        if (estado.escala === 'real' && estado.orientacion === 'auto') {
-            const pags = await out.copyPages(src, indices);
-            pags.forEach((p) => out.addPage(p));
-            return out.save();
-        }
-
-        const [pw, ph] = PAPEL_PT[papel.value] || PAPEL_PT.LETTER;
         const embebidas = await out.embedPages(indices.map((i) => src.getPage(i)));
         indices.forEach((i, k) => {
             const emb = embebidas[k];
@@ -458,10 +533,7 @@
             const girada = rot === 90 || rot === 270;
             const dw = girada ? h : w, dh = girada ? w : h;      // tamaño como se ve
 
-            const horizontal = estado.orientacion === 'horizontal' || (estado.orientacion === 'auto' && dw > dh);
-            const W = horizontal ? Math.max(pw, ph) : Math.min(pw, ph);
-            const H = horizontal ? Math.min(pw, ph) : Math.max(pw, ph);
-            const s = estado.escala === 'ajustar' ? Math.min(W / dw, H / dh) : 1;
+            const { W, H, s } = hojaPara(dw, dh);
             const ox = (W - dw * s) / 2, oy = (H - dh * s) / 2;
 
             // /Rotate del PDF gira en sentido horario; drawPage rota antihorario.
@@ -536,7 +608,6 @@
             ocupado(true, 'Imprimiendo');
             const r = await subir(blob, nombre, desc);
             mostrarMensaje(r.ok ? 'ok' : 'err', r.msg);
-            if (r.ok) refrescarRecientes();
         } catch (err) {
             mostrarMensaje('err', err.message || 'No se pudo imprimir.');
         } finally {
@@ -545,47 +616,6 @@
             pintarResumen();
         }
     });
-
-    // ------------------------------------------------------- recientes
-    const listaRecientes = $('listaRecientes');
-
-    async function refrescarRecientes() {
-        if (!listaRecientes) return;
-        try {
-            const resp = await fetch(window.location.pathname + '?parcial=recientes', { headers: { 'X-Requested-With': 'XMLHttpRequest' }, cache: 'no-store' });
-            if (resp.ok) listaRecientes.innerHTML = await resp.text();
-        } catch (e) { /* se verá al recargar */ }
-    }
-
-    if (listaRecientes) {
-        listaRecientes.addEventListener('submit', async (ev) => {
-            const f = ev.target.closest('.form-reimprimir');
-            if (!f) return;
-            ev.preventDefault();
-            const b = f.querySelector('button');
-            if (b.disabled) return;
-            const fd = new FormData(f);
-            fd.set('copias', copias.value);
-            fd.set('intercalar', intercalar.checked ? '1' : '0');
-            fd.set('papel', papel.value);
-            fd.set('duplex', duplex ? duplex.value : 'no');
-            const html = b.innerHTML;
-            b.disabled = true;
-            b.innerHTML = '<span class="spinner spinner-tinta" aria-hidden="true"></span><span>Imprimiendo</span>';
-            try {
-                const resp = await fetch(window.location.pathname, { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-                let r = null;
-                try { r = await resp.json(); } catch (e) { /* no era JSON */ }
-                if (!r) throw new Error('El servidor respondió con un error (' + resp.status + '). Revisa el error.log de Apache.');
-                mostrarMensaje(r.ok ? 'ok' : 'err', r.msg);
-                if (r.ok) { await refrescarRecientes(); return; }
-            } catch (err) {
-                mostrarMensaje('err', err.message || 'No se pudo reimprimir.');
-            }
-            b.disabled = false;
-            b.innerHTML = html;
-        });
-    }
 
     // Si el navegador recordó un archivo al volver a la página.
     if (input.files && input.files[0]) alElegir(input.files[0]);

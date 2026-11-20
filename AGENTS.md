@@ -34,15 +34,20 @@ Lee antes: [README.md](README.md), [PRD.md](PRD.md), [Architecture.md](Architect
    textos de la interfaz, mensajes, documentos. Usa comas, dos puntos o guion largo.
 
 ## Datos y seguridad (estricto)
-- **Nunca versionar `archivo/`**: guarda copias de documentos personales impresos
-  (informes médicos, cédulas, RIF...) y `_registro.jsonl` con IPs. Solo se versiona
-  `archivo/.htaccess`. No debilites el `.gitignore`; nunca leas ni muestres esos archivos.
+- **No guardar documentos.** El portal no guarda copias ni historial de lo impreso
+  (se quitó `GUARDAR_COPIA` en nov-2026 por ser archivos personales). Todo documento
+  vive solo en una carpeta de `dir_trabajo()`, que se borra sola al terminar la
+  petición. No agregues copias, registros con nombres de archivo ni «reimprimir»
+  sin que el dueño lo pida expresamente.
+- `archivo/` es heredada: puede tener copias viejas en el servidor. Se conserva
+  `archivo/.htaccess` (`Require all denied`) y las reglas del `.gitignore` hasta que el
+  dueño confirme que la borró; no las quites. Nunca leas ni muestres esos archivos.
 - Nunca versionar credenciales (`CLAVE_ACCESO`, `FTP_CLAVE` reales) ni un `config.php`
   apuntando a `127.0.0.1` de pruebas.
 - Todo POST exige **CSRF** (`csrf_ok()`); toda salida HTML pasa por `e()` (PHP) o `esc()` (JS).
 - Las opciones que llegan del navegador se validan con listas blancas en
   `opciones_impresion()`; nunca se concatenan en el PJL sin validar.
-- Nombres de archivo con `limpiar_nombre()`; rutas guardadas con `ruta_guardado_segura()`.
+- Nombres de archivo con `limpiar_nombre()`.
 - `includes/`, `tools/` y `archivo/` llevan `Require all denied`. Las herramientas de
   `tools/` solo corren por consola (`PHP_SAPI === 'cli'`). Mantén ambas protecciones.
 - Con mod_fcgid **no** se usa `php_value`/`php_flag` en `.htaccess` (da error 500):
@@ -65,10 +70,7 @@ Lee antes: [README.md](README.md), [PRD.md](PRD.md), [Architecture.md](Architect
   Apache las sirva como JavaScript. Para actualizarlas: `npm pack` de la versión exacta,
   copiar los `.min` y su licencia, y cambiar la versión en README y Architecture.
 - La interfaz debe seguir funcionando sin JavaScript (imprime el archivo completo).
-- «Recientes» lee `archivo/_registro.jsonl`. La copia guardada lleva la extensión del
-  archivo realmente impreso (el PDF que armó el navegador), no la del original, para
-  poder reimprimirla. Las filas sin la clave `opciones` son anteriores a `ZONA_HORARIA`
-  y están en UTC (`fecha_registro()` las convierte).
+
 
 ## Flujo de trabajo con Git
 - Ramas y Pull Requests para todo; `main` se actualiza solo por merge de PR.

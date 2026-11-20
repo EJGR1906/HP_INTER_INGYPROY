@@ -22,15 +22,15 @@ red (opcionalmente con una clave común, `CLAVE_ACCESO`).
 | RF-08 | Doble cara por borde largo o corto. | Hecho |
 | RF-09 | Imprimir imágenes JPG y PNG. | Hecho |
 | RF-10 | Office (DOCX, XLSX, PPTX...) convertido a PDF con LibreOffice si está instalado. | Hecho (depende del servidor) |
-| RF-11 | Guardar copia e historial de lo impreso, avisando en la página (`GUARDAR_COPIA`). | Hecho |
-| RF-12 | Sección «Recientes»: últimas impresiones con botón Reimprimir (con las opciones del panel). | Hecho |
+| RF-11 | No guardar copias ni historial de lo impreso: el documento se borra del servidor al enviarlo. | Hecho (antes había `GUARDAR_COPIA`, quitado en nov-2026) |
 | RF-13 | Tema claro y oscuro, usable en el teléfono. | Hecho |
 
 ## Requisitos no funcionales
 - Sin dependencias en el servidor más allá de Apache + PHP 8 (LibreOffice opcional).
 - Sin internet: las librerías del navegador están en `assets/vendor/`.
 - Archivos grandes por bloques: el servidor no carga el documento entero en memoria.
-- Seguridad: CSRF en todo POST, nombres de archivo saneados, `archivo/` y `includes/`
+- Privacidad: ningún documento queda en el servidor después de imprimirse.
+- Seguridad: CSRF en todo POST, nombres de archivo saneados, `includes/` y `tools/`
   bloqueadas por HTTP, opciones validadas con listas blancas.
 - Diseño: mismo sistema que el Dashboard FTTM; contraste AA en claro y oscuro.
 
@@ -38,3 +38,4 @@ red (opcionalmente con una clave común, `CLAVE_ACCESO`).
 - Cola de impresión, estado de la impresora o niveles de tóner.
 - Varias impresoras (se configura una en `config.php`).
 - Cuentas de usuario por persona.
+- Historial o reimpresión de documentos (se descartó: son archivos personales).

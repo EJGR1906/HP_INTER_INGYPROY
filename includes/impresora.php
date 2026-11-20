@@ -43,7 +43,7 @@ function opciones_impresion(array $entrada): array
     return ['copias' => $copias, 'intercalar' => $intercalar, 'papel' => $papel, 'duplex' => $duplex];
 }
 
-/** Texto corto de las opciones para mensajes y registro. */
+/** Texto corto de las opciones para el mensaje de resultado. */
 function describir_opciones(array $op): string
 {
     $partes = [];

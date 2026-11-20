@@ -1,11 +1,9 @@
 <?php
 // =====================================================================
 // includes/util.php — Sesión, CSRF, flash, respuestas (JSON o redirect),
-// límites de subida y REGISTRO VISIBLE de impresiones.
-// ---------------------------------------------------------------------
-// El registro es TRANSPARENTE: la página avisa de que se guarda una copia
-// de cada documento y muestra el historial a quien use el portal. La
-// carpeta /archivo está bloqueada para descargas por HTTP (.htaccess).
+// límites de subida y carpetas temporales de trabajo.
+// No se guarda ninguna copia de lo impreso: la carpeta temporal se borra
+// al terminar cada petición (borrar_dir).
 // =====================================================================
 
 /** Arranca la sesión con cookie endurecida (una sola vez). */
@@ -117,11 +115,13 @@ function mensaje_error_subida(int $codigo): string
     }
 }
 
-/** Crea una carpeta temporal de trabajo única. */
+/** Crea una carpeta temporal de trabajo única que se borra sola al terminar la petición. */
 function dir_trabajo(string $prefijo): string
 {
     $dir = rtrim(sys_get_temp_dir(), '\\/') . DIRECTORY_SEPARATOR . $prefijo . bin2hex(random_bytes(5));
     @mkdir($dir, 0775, true);
+    // Aunque la petición se corte (timeout, error fatal), el documento no queda en disco.
+    register_shutdown_function('borrar_dir', $dir);
     return $dir;
 }
 
@@ -140,102 +140,6 @@ function humano_bytes(int $n): string
     $u = ['B', 'KB', 'MB', 'GB']; $i = 0; $v = (float) $n;
     while ($v >= 1024 && $i < count($u) - 1) { $v /= 1024; $i++; }
     return ($i >= 2 ? str_replace('.', ',', (string) round($v, 1)) : (string) (int) $v) . ' ' . $u[$i];
-}
-
-/** Carpeta raíz del proyecto (lib/ está un nivel por debajo). */
-function raiz(): string
-{
-    return dirname(__DIR__);
-}
-
-/** Carpeta del archivo de documentos. */
-function dir_archivo(): string
-{
-    return raiz() . DIRECTORY_SEPARATOR . 'archivo';
-}
-
-/**
- * Guarda una copia del documento y añade una línea al registro visible.
- * @return string  Ruta relativa guardada (para el historial / reimpresión).
- */
-function registrar_impresion(string $rutaOrigen, string $nombreMostrar, array $meta): string
-{
-    $mes     = date('Y-m');
-    $destino = dir_archivo() . DIRECTORY_SEPARATOR . $mes;
-    if (!is_dir($destino)) @mkdir($destino, 0775, true);
-
-    // El nombre visible puede ser "foto.png" aunque lo impreso sea el PDF que armó
-    // el navegador: la copia lleva la extensión del archivo real para poder reimprimirla.
-    $extReal  = strtolower(pathinfo($rutaOrigen, PATHINFO_EXTENSION));
-    $baseNom  = limpiar_nombre(pathinfo($nombreMostrar, PATHINFO_FILENAME));
-    $seguro   = date('Ymd_His') . '_' . bin2hex(random_bytes(2)) . '__' . $baseNom . ($extReal !== '' ? '.' . $extReal : '');
-    @copy($rutaOrigen, $destino . DIRECTORY_SEPARATOR . $seguro);
-
-    $fila = [
-        'ts'       => date('Y-m-d H:i:s'),
-        'ip'       => $_SERVER['REMOTE_ADDR'] ?? '',
-        'original' => $nombreMostrar,
-        'guardado' => $mes . '/' . $seguro,
-        'metodo'   => $meta['metodo'] ?? '',
-        'estado'   => $meta['estado'] ?? '',
-        'bytes'    => (int) ($meta['bytes'] ?? 0),
-        'opciones' => (string) ($meta['opciones'] ?? ''),
-    ];
-    anotar_registro($fila);
-    return $fila['guardado'];
-}
-
-/** Agrega una línea al registro (archivo/_registro.jsonl). */
-function anotar_registro(array $fila): void
-{
-    @file_put_contents(
-        dir_archivo() . DIRECTORY_SEPARATOR . '_registro.jsonl',
-        json_encode($fila, JSON_UNESCAPED_UNICODE) . "\n",
-        FILE_APPEND | LOCK_EX
-    );
-}
-
-/** Anota una reimpresión (no guarda otra copia: apunta a la misma). */
-function registrar_reimpresion(string $guardado, string $nombreMostrar, array $meta): void
-{
-    anotar_registro([
-        'ts'       => date('Y-m-d H:i:s'),
-        'ip'       => $_SERVER['REMOTE_ADDR'] ?? '',
-        'original' => $nombreMostrar,
-        'guardado' => $guardado,
-        'metodo'   => $meta['metodo'] ?? '',
-        'estado'   => 'reimpreso',
-        'bytes'    => (int) ($meta['bytes'] ?? 0),
-        'opciones' => (string) ($meta['opciones'] ?? ''),
-    ]);
-}
-
-/** Últimas N entradas del registro (más recientes primero). */
-function leer_historial(int $max): array
-{
-    $ruta = dir_archivo() . DIRECTORY_SEPARATOR . '_registro.jsonl';
-    if (!is_file($ruta)) return [];
-    $lineas = file($ruta, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    if ($lineas === false) return [];
-    $filas = [];
-    foreach (array_reverse(array_slice($lineas, -$max)) as $l) {
-        $d = json_decode($l, true);
-        if (is_array($d)) $filas[] = $d;
-    }
-    return $filas;
-}
-
-/**
- * Ruta absoluta y segura de un documento guardado, validando que esté
- * dentro de /archivo (evita salir de la carpeta con "../").
- */
-function ruta_guardado_segura(string $rel): ?string
-{
-    $base = realpath(dir_archivo());
-    $full = realpath(dir_archivo() . DIRECTORY_SEPARATOR . str_replace('\\', '/', $rel));
-    if ($base === false || $full === false) return null;
-    if (strncmp($full, $base . DIRECTORY_SEPARATOR, strlen($base) + 1) !== 0) return null;  // fuera de /archivo
-    return is_file($full) ? $full : null;
 }
 
 /** Borra recursivamente una carpeta temporal de trabajo. */

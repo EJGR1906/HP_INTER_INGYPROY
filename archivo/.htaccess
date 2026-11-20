@@ -1,4 +1,6 @@
-# La carpeta /archivo guarda las copias de los documentos impresos.
+# La carpeta /archivo guardaba copias de los documentos impresos (función
+# GUARDAR_COPIA, quitada en nov-2026). Ya no se escribe nada aquí, pero se
+# conserva este bloqueo hasta que se borren las copias viejas del servidor.
 # Nadie debe poder descargarlas por HTTP: se bloquea todo acceso web.
 # (PHP las lee del disco; no se sirven al navegador.)
 Require all denied

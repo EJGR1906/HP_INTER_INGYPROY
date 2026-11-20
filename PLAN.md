@@ -18,15 +18,19 @@ Formato: `- [ ]` abierto, `- [x]` hecho con fecha.
 - [x] T-07 Interfaz con el sistema de diseño del Dashboard FTTM, sin emojis ni « · ». ✅ 2026-11-20
 - [x] T-08 Documentación: README, PRD, Architecture, Design-System, PLAN, CLAUDE, AGENTS, docs/. ✅ 2026-11-20
 - [x] T-09 `tools/impresora_falsa.php` para probar sin la impresora. ✅ 2026-11-20
-- [x] T-10 Sección «Recientes» con botón Reimprimir (usa las opciones del panel) y registro de reimpresiones; hora local con `ZONA_HORARIA`. ✅ 2026-11-20
+- [x] T-10 Sección «Recientes» con botón Reimprimir. ✅ 2026-11-20 (quitada en T-14)
+
+- [x] T-14 Se quita `GUARDAR_COPIA`: sin copias, sin registro, sin «Recientes» ni reimpresión; la carpeta temporal se borra aunque la petición se corte. ✅ 2026-11-20
+- [x] T-13 La vista previa muestra cada hoja como saldrá (papel, orientación y escala) y la doble cara explica cómo se voltean las hojas. ✅ 2026-11-20
 
 ## Tareas del dueño
-- [ ] H-01 Borrar el acceso directo `C:\wamp64\www\HP` y crear la unión `mklink /J C:\wamp64\www\HP C:\Proyectos\HP`.
+- [x] H-01 Borrar el acceso directo `C:\wamp64\www\HP` y crear la unión `mklink /J C:\wamp64\www\HP C:\Proyectos\HP`.
 - [ ] H-02 En `httpd.conf`: `FcgidMaxRequestLen 230686720`, `FcgidIOTimeout 600`, `FcgidBusyTimeout 600`; reiniciar Apache.
-- [ ] H-03 Copiar al servidor los archivos de este repo (o `git pull` en `C:\Proyectos\HP`) conservando `archivo/`.
+- [ ] H-03 Copiar al servidor los archivos de este repo (o `git pull` en `C:\Proyectos\HP`) 
 - [ ] H-04 Probar un PDF de varias páginas con rango, 2 copias y doble cara; confirmar que la M601 respeta copias y papel.
-- [ ] H-05 Confirmar si la M601 tiene unidad dúplex; si no, `DUPLEX_DISPONIBLE = false`.
-- [ ] H-06 Decidir si «Recientes» debe verse para todos (muestra nombres de documentos personales). Para ocultarla: `HISTORIAL_MAX = 0`.
+- [ ] H-05 Confirmar si la M601 tiene unidad dúplex (modelo «M601dn», o «Accesorio dúplex» en la página web de la impresora); si no, `DUPLEX_DISPONIBLE = false`. Hoy está en `true` sin confirmar.
+- [x] H-06 Decidir si «Recientes» se muestra a todos: se decidió quitar copias e historial (T-14).
+- [ ] H-07 Borrar en el servidor las copias viejas: todo lo que hay en `C:\Proyectos\HP\archivo` **menos** `.htaccess` (carpetas `2026-07` a `2026-11` y `_registro.jsonl`). Revisar también la papelera.
 
 ## Pendiente técnico
 - [ ] T-11 Varias hojas por cara (2 o 4 páginas por hoja).
