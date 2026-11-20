@@ -61,8 +61,11 @@ const PAPEL_DEFECTO = 'LETTER';
 const COPIAS_MAX = 99;
 
 // ¿La impresora tiene unidad de doble cara (dúplex)? Si es false, la
-// opción no se muestra.
-const DUPLEX_DISPONIBLE = true;
+// opción no se muestra y siempre se envía DUPLEX=OFF.
+// La de la oficina es la M601n (modelo CE989A, sin unidad dúplex: lo
+// confirma su página de configuración, 20-nov-2026). Pon true solo si se
+// cambia por una M601dn (CE990A) o se le instala el accesorio dúplex.
+const DUPLEX_DISPONIBLE = false;
 
 // Contraseña simple de acceso al portal (opcional). Deja '' para NO pedir
 // contraseña (herramienta interna de LAN). Si pones algo, se pedirá al entrar.

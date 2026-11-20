@@ -28,7 +28,7 @@ Formato: `- [ ]` abierto, `- [x]` hecho con fecha.
 - [x] H-02 En `httpd.conf`: `FcgidMaxRequestLen 230686720`, `FcgidIOTimeout 600`, `FcgidBusyTimeout 600`; reiniciar Apache. ✅ 2026-11-20 (`httpd -t`: Syntax OK)
 - [x] H-03 `git pull` en `C:\Proyectos\HP`. ✅ 2026-11-20
 - [ ] H-04 Probar un PDF de varias páginas con rango, 2 copias e intercalar activado y desactivado; confirmar que la M601 respeta copias, papel y orden. (20-nov: PDF grande impreso bien; falta revisar copias e intercalar.)
-- [ ] H-05 Confirmar si la M601 tiene unidad dúplex (modelo «M601dn», o «Accesorio dúplex» en la página web de la impresora); si no, `DUPLEX_DISPONIBLE = false`. Hoy está en `true` sin confirmar. **20-nov: se probó doble cara y salieron 2 hojas por un solo lado**: la impresora ignora `@PJL SET DUPLEX=ON`, lo más probable porque es M601n sin unidad dúplex.
+- [x] H-05 Confirmar si la M601 tiene unidad dúplex (modelo «M601dn», o «Accesorio dúplex» en la página web de la impresora); si no, `DUPLEX_DISPONIBLE = false`. Hoy está en `true` sin confirmar. **20-nov: se probó doble cara y salieron 2 hojas por un solo lado**: la impresora ignora `@PJL SET DUPLEX=ON`, lo más probable porque es M601n sin unidad dúplex. **Confirmado: modelo CE989A (M601n), sin unidad dúplex en la página de configuración.** ✅ 2026-11-20
 - [x] H-06 Decidir si «Recientes» se muestra a todos: se decidió quitar copias e historial (T-14).
 - [x] H-07 Borrar en el servidor las copias viejas de `C:\Proyectos\HP\archivo` (menos `.htaccess`). ✅ 2026-11-20. Se conservan `archivo/.htaccess` y las reglas del `.gitignore` por si quedó alguna copia en otra ruta.
 - [ ] H-08 En GitHub, cambiar la rama principal a `main` (Settings > General > Default branch) y borrar `claude/nice-dirac-2asnl0`.
@@ -36,4 +36,4 @@ Formato: `- [ ]` abierto, `- [x]` hecho con fecha.
 ## Pendiente técnico
 - [ ] T-11 Varias hojas por cara (2 o 4 páginas por hoja).
 - [ ] T-12 Pruebas automáticas (Playwright + impresora falsa) en CI.
-- [ ] T-15 Según H-05: si no hay unidad dúplex, ocultar la opción (`DUPLEX_DISPONIBLE = false`) y ofrecer «doble cara manual» (imprime impares, se voltea el papel, imprime pares en orden inverso).
+- [x] T-15 Ocultar la doble cara: `DUPLEX_DISPONIBLE = false` (M601n sin unidad dúplex). Se descartó la doble cara manual. ✅ 2026-11-20

@@ -79,7 +79,7 @@ rechazan con un mensaje claro y se pide subirlos como PDF.
 | `EXT_DIRECTAS`, `EXT_CONVERTIBLES` | Formatos aceptados |
 | `PAPELES`, `PAPEL_DEFECTO` | Tamaños de papel que se ofrecen (clave PJL => nombre) |
 | `COPIAS_MAX` | Máximo de copias |
-| `DUPLEX_DISPONIBLE` | Muestra la opción de doble cara. Ponlo en `true` solo si la impresora tiene unidad dúplex (M601**dn**, o M601n con el accesorio instalado) |
+| `DUPLEX_DISPONIBLE` | Muestra la opción de doble cara. Hoy `false`: la impresora es la M601n (CE989A), sin unidad dúplex. Ponlo en `true` solo con una M601**dn** o con el accesorio dúplex instalado |
 | `CLAVE_ACCESO` | Clave simple para entrar (vacía = sin clave) |
 
 ## 7. Comprobar
