@@ -1,0 +1,14 @@
+# .htaccess — Portal de impresión
+# - Sin listado de carpetas.
+# - Sin servir por HTTP el config, las librerías ni el registro.
+Options -Indexes
+
+# No exponer código ni registros como texto plano.
+<FilesMatch "\.(jsonl|md)$">
+    Require all denied
+</FilesMatch>
+
+# Bloquear archivos ocultos (.htaccess, etc.).
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>

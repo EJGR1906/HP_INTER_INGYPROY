@@ -1,0 +1,4 @@
+# La carpeta /archivo guarda las copias de los documentos impresos.
+# Nadie debe poder descargarlas por HTTP: se bloquea todo acceso web.
+# (PHP las lee del disco; no se sirven al navegador.)
+Require all denied

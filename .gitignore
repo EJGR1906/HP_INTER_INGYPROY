@@ -1,0 +1,13 @@
+# ============================================================
+#  Copias de documentos impresos (sensibles)
+# ------------------------------------------------------------
+#  Viven solo en el servidor; NO se versionan en el repo.
+#  Se conserva únicamente el .htaccess que bloquea su descarga.
+# ============================================================
+/archivo/*
+!/archivo/.htaccess
+
+# Basura del sistema
+Thumbs.db
+Desktop.ini
+.DS_Store

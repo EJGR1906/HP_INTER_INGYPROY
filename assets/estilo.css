@@ -1,0 +1,57 @@
+/* estilo.css — Portal de impresión (claro/oscuro, autocontenido). */
+:root { color-scheme: light dark; --azul:#1565c0; --borde:#8884; --sutil:#8889; }
+* { box-sizing: border-box; }
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    margin: 0; line-height: 1.5;
+    background: Canvas; color: CanvasText;
+}
+.wrap { max-width: 720px; margin: 6vh auto; padding: 0 18px; }
+.head { margin-bottom: 18px; }
+.head h1 { font-size: 1.5rem; margin: 0; }
+.sub { color: var(--sutil); font-size: .9rem; }
+
+.card {
+    border: 1px solid var(--borde); border-radius: 14px;
+    padding: 22px; margin-bottom: 18px;
+}
+.card h2 { font-size: 1.1rem; margin: 0 0 12px; }
+
+.drop { display: block; margin-bottom: 14px; }
+.drop input[type=file] {
+    width: 100%; padding: 14px; border: 1px dashed var(--borde);
+    border-radius: 10px; background: transparent; color: inherit; cursor: pointer;
+}
+.drop span { display: block; color: var(--sutil); font-size: .82rem; margin-top: 6px; }
+
+button {
+    padding: 11px 16px; border: 0; border-radius: 10px;
+    background: var(--azul); color: #fff; font-size: 1rem; cursor: pointer;
+}
+button:hover { filter: brightness(1.08); }
+.btn-sm { padding: 6px 12px; font-size: .85rem; }
+
+input[type=password] {
+    width: 100%; padding: 11px; margin-bottom: 12px;
+    border: 1px solid var(--borde); border-radius: 10px;
+    background: transparent; color: inherit;
+}
+
+.msg { padding: 12px 14px; border-radius: 10px; margin-bottom: 16px; }
+.msg-ok  { background: #2e7d3222; border: 1px solid #2e7d3288; }
+.msg-err { background: #c6282822; border: 1px solid #c6282888; }
+
+.aviso {
+    margin: 16px 0 0; padding: 12px 14px; border-radius: 10px;
+    background: #ffb30018; border: 1px solid #ffb30055; font-size: .9rem;
+}
+
+.tabla-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--borde); }
+th { color: var(--sutil); font-weight: 600; }
+.doc { word-break: break-word; }
+.nowrap { white-space: nowrap; }
+
+.muted { color: var(--sutil); }
+.pie { text-align: center; font-size: .82rem; margin-top: 6px; }
