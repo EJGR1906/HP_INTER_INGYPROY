@@ -12,7 +12,6 @@
 //   - Office: se convierte a PDF en el servidor (accion=convertir) si hay
 //     LibreOffice; si no, se imprime completo sin vista previa.
 //   - Sube con barra de progreso (XHR) y muestra la respuesta JSON.
-//   - «Recientes»: reimprime con las opciones del panel y refresca la lista.
 // Copias, intercalar, papel y doble cara viajan como campos del formulario
 // y el servidor los aplica con PJL (includes/impresora.php).
 // =====================================================================
@@ -609,7 +608,6 @@
             ocupado(true, 'Imprimiendo');
             const r = await subir(blob, nombre, desc);
             mostrarMensaje(r.ok ? 'ok' : 'err', r.msg);
-            if (r.ok) refrescarRecientes();
         } catch (err) {
             mostrarMensaje('err', err.message || 'No se pudo imprimir.');
         } finally {
@@ -618,47 +616,6 @@
             pintarResumen();
         }
     });
-
-    // ------------------------------------------------------- recientes
-    const listaRecientes = $('listaRecientes');
-
-    async function refrescarRecientes() {
-        if (!listaRecientes) return;
-        try {
-            const resp = await fetch(window.location.pathname + '?parcial=recientes', { headers: { 'X-Requested-With': 'XMLHttpRequest' }, cache: 'no-store' });
-            if (resp.ok) listaRecientes.innerHTML = await resp.text();
-        } catch (e) { /* se verá al recargar */ }
-    }
-
-    if (listaRecientes) {
-        listaRecientes.addEventListener('submit', async (ev) => {
-            const f = ev.target.closest('.form-reimprimir');
-            if (!f) return;
-            ev.preventDefault();
-            const b = f.querySelector('button');
-            if (b.disabled) return;
-            const fd = new FormData(f);
-            fd.set('copias', copias.value);
-            fd.set('intercalar', intercalar.checked ? '1' : '0');
-            fd.set('papel', papel.value);
-            fd.set('duplex', duplex ? duplex.value : 'no');
-            const html = b.innerHTML;
-            b.disabled = true;
-            b.innerHTML = '<span class="spinner spinner-tinta" aria-hidden="true"></span><span>Imprimiendo</span>';
-            try {
-                const resp = await fetch(window.location.pathname, { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-                let r = null;
-                try { r = await resp.json(); } catch (e) { /* no era JSON */ }
-                if (!r) throw new Error('El servidor respondió con un error (' + resp.status + '). Revisa el error.log de Apache.');
-                mostrarMensaje(r.ok ? 'ok' : 'err', r.msg);
-                if (r.ok) { await refrescarRecientes(); return; }
-            } catch (err) {
-                mostrarMensaje('err', err.message || 'No se pudo reimprimir.');
-            }
-            b.disabled = false;
-            b.innerHTML = html;
-        });
-    }
 
     // Si el navegador recordó un archivo al volver a la página.
     if (input.files && input.files[0]) alElegir(input.files[0]);

@@ -9,9 +9,8 @@
 //                          a la impresora con las opciones en PJL.
 //        accion=convertir  convierte un documento de Office a PDF con
 //                          LibreOffice y lo devuelve para la vista previa.
-//        accion=reimprimir reimprime una copia guardada en /archivo
-//                          (botón de la sección «Recientes»).
-// GET ?parcial=recientes : solo la lista de recientes (la refresca el JS).
+// No se guarda copia de nada: cada documento vive en una carpeta temporal
+// que se borra al terminar la petición.
 // Las respuestas son JSON si la petición viene del JS (X-Requested-With)
 // y flash + redirect (patrón PRG) si viene de un formulario sin JS.
 // =====================================================================
@@ -19,9 +18,6 @@ require __DIR__ . '/config.php';
 require __DIR__ . '/includes/util.php';
 require __DIR__ . '/includes/impresora.php';
 require __DIR__ . '/includes/cabecera.php';
-require __DIR__ . '/includes/historial.php';
-
-if (defined('ZONA_HORARIA') && ZONA_HORARIA !== '') date_default_timezone_set(ZONA_HORARIA);
 
 iniciar_sesion();
 $csrf = csrf_token();
@@ -119,51 +115,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         [$ok, $r, $via] = imprimir_listo($listo, $op, $mostrar, $work);
         $desc = describir_opciones($op) . ($paginas !== '' ? ', páginas: ' . $paginas : '');
-        if ($ok && GUARDAR_COPIA) {
-            registrar_impresion($entrada, $mostrar, [
-                'metodo' => $via, 'estado' => 'impreso',
-                'bytes'  => (int) $_FILES['doc']['size'], 'opciones' => $desc,
-            ]);
-        }
         borrar_dir($work);
         responder($ok ? 'ok' : 'err', $ok ? "$mostrar enviado a la impresora ($desc). $r." : $r);
-    }
-
-    // ---- Reimprimir un documento del historial ----
-    if ($accion === 'reimprimir' && GUARDAR_COPIA) {
-        $rel  = (string) ($_POST['guardado'] ?? '');
-        $full = ruta_guardado_segura($rel);
-        if ($full === null) responder('err', 'Ese documento ya no está disponible.');
-        $ext  = strtolower(pathinfo($full, PATHINFO_EXTENSION));
-        $op   = opciones_impresion($_POST);
-        // Nombre visible: lo que va después de "AAAAMMDD_HHMMSS_xxxx__".
-        $partes  = explode('__', basename($full), 2);
-        $mostrar = $partes[1] ?? basename($full);
-        $work = dir_trabajo('rip_');
-        $copia = $work . DIRECTORY_SEPARATOR . 'archivo.' . ($ext ?: 'bin');
-        @copy($full, $copia);
-        [$okPrep, $listo, $errPrep] = preparar_listo($copia, $ext, $work);
-        if (!$okPrep) { borrar_dir($work); responder('err', $errPrep); }
-        [$ok, $r, $via] = imprimir_listo($listo, $op, $mostrar, $work);
-        borrar_dir($work);
-        $desc = describir_opciones($op);
-        if ($ok) {
-            registrar_reimpresion($rel, $mostrar, ['metodo' => $via, 'bytes' => (int) @filesize($full), 'opciones' => $desc]);
-        }
-        responder($ok ? 'ok' : 'err', $ok ? "$mostrar reimpreso ($desc). $r." : $r);
     }
 
     responder('err', 'Acción no reconocida.', 400);
 }
 
 // --- Vista (GET) -----------------------------------------------------
-$verRecientes = GUARDAR_COPIA && HISTORIAL_MAX > 0;
-if (isset($_GET['parcial']) && $_GET['parcial'] === 'recientes') {
-    header('Content-Type: text/html; charset=utf-8');
-    header('Cache-Control: no-store');
-    echo $verRecientes ? pintar_historial(leer_historial(HISTORIAL_MAX), $csrf) : '';
-    exit;
-}
 $flash      = tomar_flash();
 $aceptar    = '.' . implode(',.', array_merge(EXT_DIRECTAS, EXT_CONVERTIBLES, ['jpg', 'jpeg', 'png']));
 $limite     = limite_subida_bytes();
@@ -320,15 +279,7 @@ $config = [
         </section>
     </form>
 
-    <?php if ($verRecientes): ?>
-        <section class="card" id="recientes">
-            <div class="card-head"><h3><?= icono('calendario') ?>Recientes</h3></div>
-            <p class="card-desc">Se guarda una copia de cada documento impreso en el servidor (no se puede descargar desde la red). Reimprimir usa las copias, el papel y la doble cara elegidos arriba.</p>
-            <div id="listaRecientes"><?= pintar_historial(leer_historial(HISTORIAL_MAX), $csrf) ?></div>
-        </section>
-    <?php elseif (GUARDAR_COPIA): ?>
-        <p class="pie muted"><?= icono('info', 'icon-sm') ?> Se guarda una copia de cada documento impreso en el servidor (no se puede descargar desde la red).</p>
-    <?php endif; ?>
+    <p class="pie muted"><?= icono('info', 'icon-sm') ?> No se guarda ninguna copia: el documento se borra del servidor apenas se envía a la impresora.</p>
     <p class="pie muted">Herramienta interna de red. Úsala solo dentro de la oficina.</p>
 </main>
 

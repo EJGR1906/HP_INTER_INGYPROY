@@ -19,7 +19,6 @@ elige el archivo, ajusta las opciones y pulsa **Imprimir**.
 | Tamaño de papel | Carta, Oficio, A4, Ejecutivo (lista en `config.php`). |
 | Orientación y escala | Automática, vertical u horizontal; ajustar al papel o tamaño real. |
 | Doble cara | No, borde largo o borde corto. |
-| Recientes | Últimas impresiones (`HISTORIAL_MAX`) con botón **Reimprimir**. |
 | Formatos | PDF, JPG, PNG, TXT, PS, PCL/PRN. Office (DOCX, XLSX, PPTX...) si el servidor tiene LibreOffice. |
 
 ## Instalación rápida
@@ -47,11 +46,14 @@ Si la página da **403 Forbidden** o no sube archivos grandes, ver
 | [CLAUDE.md](CLAUDE.md) / [AGENTS.md](AGENTS.md) | Reglas para agentes de IA |
 
 ## Privacidad
-Con `GUARDAR_COPIA = true` se guarda una copia de cada documento impreso en
-`archivo/AAAA-MM/` y una línea en `archivo/_registro.jsonl`. La página lo avisa.
-La sección «Recientes» muestra a **todos** los que abren el portal los nombres de esos
-documentos (no su contenido); `HISTORIAL_MAX = 0` la oculta. La carpeta está bloqueada por
-HTTP (`archivo/.htaccess`) y **no se versiona**.
+El portal **no guarda copias ni historial** de lo impreso. Cada documento vive solo en
+una carpeta temporal mientras se envía a la impresora y se borra al terminar, aunque la
+petición falle o se corte. La página lo dice al pie.
+
+Hasta nov-2026 existía `GUARDAR_COPIA`, que guardaba copias en `archivo/`. Se quitó por
+tratarse de documentos personales. Si el servidor todavía tiene esa carpeta con archivos,
+hay que borrarlos a mano (ver [PLAN.md](PLAN.md), H-07); mientras tanto
+`archivo/.htaccess` sigue bloqueando su descarga.
 
 ## Licencias de terceros
 - [pdf.js](https://github.com/mozilla/pdf.js) 4.10.38, Apache 2.0 (`assets/vendor/LICENSE-pdfjs.txt`).

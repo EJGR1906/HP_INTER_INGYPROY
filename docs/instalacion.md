@@ -31,8 +31,8 @@ Alias /HP "C:/Proyectos/HP"
 
 ## 2. Permisos de la carpeta
 El servicio de Apache (`wampapache64`) corre normalmente como *Sistema local*.
-Debe poder **leer** `C:\Proyectos\HP` y **escribir** en `C:\Proyectos\HP\archivo`
-(copias e historial) y en la carpeta temporal de PHP (`upload_tmp_dir` o la de Windows).
+Debe poder **leer** `C:\Proyectos\HP` y **escribir** en la carpeta temporal de PHP
+(`upload_tmp_dir` o la de Windows). El portal no escribe nada dentro del proyecto.
 
 ## 3. Límites para archivos grandes (200 MB)
 Hay **tres** límites y deben estar de acuerdo:
@@ -75,9 +75,6 @@ rechazan con un mensaje claro y se pide subirlos como PDF.
 | `IMPRESORA_METODO` | `auto` (RAW y si falla FTP), `raw` o `ftp` |
 | `RAW_PUERTO` | Puerto JetDirect (9100) |
 | `FTP_USUARIO`, `FTP_CLAVE`, `FTP_PUERTO_DIR` | Acceso al FTP de impresión (`PORT` o `PORT1`) |
-| `ZONA_HORARIA` | Hora del registro (`America/Caracas`; sin ella PHP usa UTC) |
-| `GUARDAR_COPIA` | Guarda copia de lo impreso en `archivo/` |
-| `HISTORIAL_MAX` | Filas de «Recientes» (0 = ocultar la sección) |
 | `MAX_MB` | Tamaño máximo por archivo |
 | `EXT_DIRECTAS`, `EXT_CONVERTIBLES` | Formatos aceptados |
 | `PAPELES`, `PAPEL_DEFECTO` | Tamaños de papel que se ofrecen (clave PJL => nombre) |

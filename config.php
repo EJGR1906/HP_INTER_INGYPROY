@@ -6,12 +6,6 @@
 // No hace falta tocar el resto del código.
 // =====================================================================
 
-// --- ZONA HORARIA ----------------------------------------------------
-// Hora con la que se anotan y muestran las impresiones. Sin esto PHP usa
-// UTC y el historial sale 4 horas adelantado (el registro de nov-2026 lo
-// muestra: archivo creado a las 16:10, anotado 20:10).
-const ZONA_HORARIA = 'America/Caracas';
-
 // --- IMPRESORA -------------------------------------------------------
 // IP de la impresora (la misma con la que probaste el FTP).
 const IMPRESORA_IP = '10.2.200.74';
@@ -34,17 +28,10 @@ const FTP_CLAVE   = '';
 // aparecía el directorio "PORT". Si tu impresora usa "PORT1", cámbialo.
 const FTP_PUERTO_DIR = 'PORT';
 
-// --- ARCHIVO DE DOCUMENTOS (transparente) ----------------------------
-// Si es true, se guarda una copia de cada documento impreso en /archivo,
-// se muestra un AVISO visible en la página y se lleva un historial.
-// La carpeta /archivo está bloqueada para descargas por HTTP (.htaccess).
-// Pon false si NO quieres guardar copias.
-const GUARDAR_COPIA = true;
-
-// Cuántas impresiones recientes mostrar en la página (sección «Recientes»,
-// con botón para reimprimir). Ojo: todos los que abren el portal ven los
-// nombres de esos documentos. Pon 0 para no mostrar la lista.
-const HISTORIAL_MAX = 25;
+// --- PRIVACIDAD -----------------------------------------------------
+// El portal NO guarda copias de lo impreso ni lleva historial: el documento
+// vive solo en una carpeta temporal mientras se envía y se borra al terminar.
+// (Hasta nov-2026 existía GUARDAR_COPIA; se quitó por ser archivos personales.)
 
 // --- LÍMITES / SEGURIDAD ---------------------------------------------
 // Tamaño máximo por archivo (MB). Debe caber en upload_max_filesize y

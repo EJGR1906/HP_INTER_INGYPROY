@@ -1,7 +1,8 @@
 # ============================================================
-#  Copias de documentos impresos (sensibles)
+#  Copias viejas de documentos impresos (sensibles)
 # ------------------------------------------------------------
-#  Viven solo en el servidor; NO se versionan en el repo.
+#  GUARDAR_COPIA se quitó en nov-2026; el servidor aún puede tener
+#  copias en /archivo hasta que se borren. NUNCA se versionan.
 #  Se conserva únicamente el .htaccess que bloquea su descarga.
 # ============================================================
 /archivo/*
